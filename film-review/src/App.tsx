@@ -1,26 +1,17 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import MovieCard from "./components/MovieCard";
 
-function App() {
+const App: React.FC = () => {
+  const movie = { id: 1, title: "LEG", posterUrl: "/assets/lighthouse.png"};
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Movie Ratings</h1>
+      <div>
+      <MovieCard key={movie.id} movie={movie} />
+      </div>
     </div>
   );
-}
+};
 
 export default App;
