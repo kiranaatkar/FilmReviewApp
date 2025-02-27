@@ -1,14 +1,16 @@
-import React, { useState } from "react";
-import MovieCard from "./components/MovieCard";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import MoviePage from "./pages/MoviePage";
 
 const App: React.FC = () => {
-  const movie = { id: 1, title: "LEG", year: 2025, posterUrl: "/assets/lighthouse.png"};
-
   return (
-    <div>
-      <h1>Film Peak Reviews</h1>
-      <MovieCard key={movie.id} movie={movie} />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/movie/:movieName" element={<MoviePage />} />
+      </Routes>
+    </Router>
   );
 };
 

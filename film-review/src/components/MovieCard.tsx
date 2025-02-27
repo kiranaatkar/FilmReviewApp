@@ -2,13 +2,9 @@ import React, { useState } from "react";
 import Graph from "./Graph";
 import { Point, GraphConfig } from "../types/GraphTypes"
 import "../styles/MovieCard.css"
+import { Movie } from "../types/MovieTypes";
 
-type Movie = {
-  id: number;
-  title: string;
-  year: number;
-  posterUrl: string;
-};
+
 
 type Props = {
   movie: Movie;
