@@ -2,14 +2,12 @@ import React, { useState } from "react";
 import MovieCard from "./components/MovieCard";
 
 const App: React.FC = () => {
-  const movie = { id: 1, title: "LEG", posterUrl: "/assets/lighthouse.png"};
+  const movie = { id: 1, title: "LEG", year: 2025, posterUrl: "/assets/lighthouse.png"};
 
   return (
     <div>
-      <h1>Movie Ratings</h1>
-      <div>
+      <h1>Film Peak Reviews</h1>
       <MovieCard key={movie.id} movie={movie} />
-      </div>
     </div>
   );
 };

@@ -1,64 +1,75 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
+import "../styles/Graph.css"
+import { Point, GraphConfig } from "../types/GraphTypes"
 import * as d3 from "d3";
-
-interface Point {
-  x: number;
-  y: number;
-}
 
 type Props = {
     posterUrl: string;
+    data: Point[];
+    config: GraphConfig;
 }
 
-const WIDTH: number = 400;
-const HEIGHT: number = 400;
-const PADDING: number = 20;
-const HORIZONTAL_GRID_LINES: number = 4;
-const VERTICAL_GRID_LINES: number = 2;
-
-const DraggableGraph: React.FC<Props> = ({ posterUrl }) => {
+const DraggableGraph: React.FC<Props> = ({ posterUrl, data, config }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const [data, setData] = useState<Point[]>([
-    { x: 0, y: HEIGHT * (9/10) },
-    { x: WIDTH / 6, y: HEIGHT * (9/10) },
-    { x: WIDTH / 2, y: HEIGHT * (9/10) },
-    { x: WIDTH - (WIDTH / 6), y: HEIGHT * (9/10) },
-    { x: WIDTH, y: HEIGHT * (9/10) },
-  ]);
 
   useEffect(() => {
     if (!svgRef.current) return;
     const svg = d3.select(svgRef.current);
     AddBackground(svg);
-    AddGridLines(svg)    
-    AddPoints(svg);
+    AddGridLines(svg);
+    AddGradient(svg); 
     AddPath(svg);    
-  }, [data]);
+    AddPoints(svg);
+  }, []);
 
   const AddGridLines = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>) => {
-    const horizontalGridSpacing = HEIGHT / (HORIZONTAL_GRID_LINES + 1);
+    const horizontalGridSpacing = config.graphHeight / (config.horizontalGridLines);
     svg.selectAll(".vertical-grid-line")
-        .data(d3.range(1, HORIZONTAL_GRID_LINES + 1))
+        .data(d3.range(1, config.horizontalGridLines + 1))
         .join("line")
         .attr("class", "grid-line")
-        .attr("x1", 0)
-        .attr("y1", (d) => d * horizontalGridSpacing)
-        .attr("x2", WIDTH)
-        .attr("y2", (d) => d * horizontalGridSpacing)
+        .attr("x1", config.graphPadding - 5) // overhang by 5px
+        .attr("y1", (d) => (d - 1) * horizontalGridSpacing + config.verticalGridPadding)
+        .attr("x2", config.svgBoxWidth)
+        .attr("y2", (d) => (d - 1) * horizontalGridSpacing + config.verticalGridPadding)
         .attr("stroke", "gray")
-        .attr("stroke-width", 1);
+        .attr("stroke-width", 0.5);
     
-    const verticalGridSpacing = WIDTH / (VERTICAL_GRID_LINES + 1)
+    const verticalGridSpacing = config.graphWidth / (config.verticalGridLines + 1)
     svg.selectAll(".horizontal-grid-line")
-        .data(d3.range(1, VERTICAL_GRID_LINES + 1))
+        .data(d3.range(1, config.verticalGridLines + 1))
         .join("line")
         .attr("class", "grid-line")
-        .attr("x1", (d) => d * verticalGridSpacing)
+        .attr("x1", (d) => config.graphPadding + (d * verticalGridSpacing))
         .attr("y1", 0)
-        .attr("x2", (d) => d * verticalGridSpacing)
-        .attr("y2", HEIGHT)
+        .attr("x2", (d) => config.graphPadding + (d * verticalGridSpacing))
+        .attr("y2", config.svgBoxHeight)
         .attr("stroke", "gray")
-        .attr("stroke-width", 1);
+        .attr("stroke-width", 0.5);
+    
+    // add labels
+    svg.selectAll(".horizontal-grid-label")
+        .data(d3.range(0, config.horizontalGridLines))
+        .join("text")
+        .attr("class", "horizontal-grid-label")
+        .attr("x", 0)
+        .attr("y", (d) => d * horizontalGridSpacing + config.verticalGridPadding) // Align to grid line
+        .attr("fill", "black")
+        .attr("font-size", "14px")
+        .attr("font-weight", "bold")
+        .attr("alignment-baseline", "middle") // Centers text vertically
+        .text((d) => 5 - d); // 5 -> 1
+
+    svg.selectAll(".vertical-grid-label")
+        .data(d3.range(0, config.verticalGridLines + 1))
+        .join("text")
+        .attr("class", "vertical-grid-label")
+        .attr("x", (d) => config.graphPadding + (verticalGridSpacing * 0.5) + (d * verticalGridSpacing)) // Align to grid line
+        .attr("y", config.graphHeight + config.graphPadding ) 
+        .attr("fill", "black")
+        .attr("font-size", "12px")
+        .attr("text-anchor", "middle") // Centers text vertically
+        .text((d) => `Act ${ "I".repeat(d + 1) }`); // 5 -> 1
   }
 
   const AddBackground = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>) => {
@@ -66,9 +77,9 @@ const DraggableGraph: React.FC<Props> = ({ posterUrl }) => {
       .data([null]) // Dummy data to ensure only one image is added
       .join("image")
       .attr("href", posterUrl)
-      .attr("width", WIDTH)
-      .attr("height", HEIGHT)
-      .attr("x", 0)
+      .attr("width", config.graphWidth)
+      .attr("height", config.graphHeight)
+      .attr("x", config.graphPadding)
       .attr("y", 0);
   }
 
@@ -88,12 +99,13 @@ const DraggableGraph: React.FC<Props> = ({ posterUrl }) => {
           .on("drag", function (event: d3.D3DragEvent<SVGCircleElement, Point, Point>, d) {
 
             // Keep first and last point on graph boundary
+            // UNCOMMENT TO ALLOW HORIZONTAL DRAGINH
             const pointIndex: number = data.indexOf(d);
             if (pointIndex > 0 && pointIndex < data.length - 1) {
-                d.x = Math.max(data[pointIndex - 1].x + PADDING, Math.min(data[pointIndex + 1].x - PADDING, event.x));
+                d.x = Math.max(data[pointIndex - 1].x + config.pointPadding, Math.min(data[pointIndex + 1].x - config.pointPadding, event.x));
             }
             // Update Y for all points
-            d.y = Math.max(0, Math.min(HEIGHT, event.y));
+            d.y = Math.max(config.verticalGridPadding, Math.min(config.graphHeight, event.y));
 
             d3.select(this).attr("cx", d.x).attr("cy", d.y);
             updateLines(); // Redraw lines dynamically
@@ -104,18 +116,54 @@ const DraggableGraph: React.FC<Props> = ({ posterUrl }) => {
       );
 
       const updateLines = () => {
-    
-        svg.selectAll("path")
-          .data([data])
-          .attr("d", (d) => {
-            const lineGenerator = d3.line<Point>()
+
+        const lineGenerator = d3.line<Point>()
               .x((d) => d.x)
               .y((d) => d.y)
-              .curve(d3.curveNatural);
-            return lineGenerator(d) || "";
-          });
+              .curve(d3.curveMonotoneX);
+        // Generate the smooth curve path between data points
+        const pathData = lineGenerator(data);
+        // update curve
+        svg.selectAll("path")
+          .data([data])
+          .attr("d", (d) => pathData || "");
+
+        // update peak on curve
+        const peak: Point = data.reduce((prev, curr) => (curr.y < prev.y ? curr : prev), data[0]);
+        // Remove old triangle if it exists
+        svg.selectAll(".peak-triangle").remove();
+        // Add a new triangle at the peak
+        svg.append("polygon")
+            .attr("class", "peak-triangle")
+            .attr("points", `
+              ${peak.x},${peak.y - 25} 
+              ${peak.x - 10},${peak.y - 10} 
+              ${peak.x + 10},${peak.y - 10}
+            `)
+            .attr("fill", "url(#triangle-gradient)"); // Apply gradient
       };
+
+      updateLines();
   }
+
+  const AddGradient = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>) => {
+    const defs = svg.append("defs");
+    
+    const gradient = defs.append("linearGradient")
+      .attr("id", "triangle-gradient")
+      .attr("x1", "0%")
+      .attr("y1", "100%")
+      .attr("x2", "100%")
+      .attr("y2", "0%");
+
+    gradient.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", "purple");
+
+    gradient.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color", "red");
+  };
 
   const AddPath = (svg: d3.Selection<SVGSVGElement, unknown, null, undefined>) => {
     svg.selectAll("path")
@@ -125,17 +173,17 @@ const DraggableGraph: React.FC<Props> = ({ posterUrl }) => {
         const lineGenerator = d3.line<Point>()
           .x((d) => d.x)
           .y((d) => d.y)
-          .curve(d3.curveNatural);
+          .curve(d3.curveMonotoneX);
         return lineGenerator(d) || "";
       })
       .attr("fill", "none")
       .attr("stroke", "red")
-      .attr("stroke-width", 6);
+      .attr("stroke-width", 8);
   }
   
   return (
-    <div style={{ border: "1px solid black" }}>
-        <svg ref={svgRef} width={WIDTH} height={HEIGHT} />
+    <div className="graph-wrapper">
+        <svg ref={svgRef} width={config.svgBoxWidth} height={config.svgBoxHeight}/>
     </div>
   );
 };
