@@ -1,22 +1,31 @@
-import React from "react";
-import { Link } from "react-router-dom";
-
-const movies = [
-  { id: 1, title: "LEG", year: 2025, posterUrl: "/assets/lighthouse.png" },
-  { id: 2, title: "Matrix", year: 1999, posterUrl: "/assets/matrix.png" },
-];
+import React, { useState, useEffect } from "react";
+import { Film } from "../types/FilmTypes";
+import FilmService from "../services/PeakReviewService";
+import FilmCard from "../components/FilmCard";
+import "../styles/Home.css"
 
 const Home: React.FC = () => {
+  const [films, setFilms] = useState<Film[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchFilms = async () => {
+          try {
+            const films = await FilmService.getFilms();
+            console.log(films)
+            setFilms(films);
+          } catch (err: any) {
+            setError(err.message);
+          }
+        };
+        fetchFilms();
+      }, []);
   return (
-    <div>
-      <h1>Film Peak Reviews</h1>
-      <ul>
-        {movies.map((movie) => (
-          <li key={movie.id}>
-            <Link to={`/movie/${encodeURIComponent(movie.title)}`}>{movie.title} ({movie.year})</Link>
-          </li>
+    <div className="film-cards">
+      {error && <p className="error">{error}</p>}
+        {films.map((film) => (
+            <FilmCard key={film.id} film={film}/>
         ))}
-      </ul>
     </div>
   );
 };

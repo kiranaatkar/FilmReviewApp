@@ -1,0 +1,17 @@
+.film-card {
+    padding: 10px;
+}
+
+.film-card a {
+    text-decoration: none;
+    color: black;
+}
+
+.film-poster {
+    width: 100px;
+    height: 100px;
+}
+
+.film-identifier {
+    text-align: center;
+}

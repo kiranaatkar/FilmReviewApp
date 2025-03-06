@@ -1,15 +1,15 @@
-.movie-card {
+.film-card {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.movie-title {
+.film-title {
     font-weight: bold;
     font-size: 1.5rem;
 }
 
-.movie-year { 
+.film-year { 
     color: grey;
     font-size: 1.2rem;
 }
