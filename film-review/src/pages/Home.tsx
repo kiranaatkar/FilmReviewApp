@@ -12,7 +12,6 @@ const Home: React.FC = () => {
         const fetchFilms = async () => {
           try {
             const films = await FilmService.getFilms();
-            console.log(films)
             setFilms(films);
           } catch (err: any) {
             setError(err.message);

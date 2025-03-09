@@ -5,6 +5,7 @@ export type Rating = {
 }
 
 export interface Point {
+  point_index: number;
   x: number;
   y: number;
 }
