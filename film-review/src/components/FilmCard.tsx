@@ -10,14 +10,12 @@ type Props = {
 const FilmCard: React.FC<Props> = ({ film }) => {
   
   return (
-    <div className="film-card">
-      <Link to={`/film/${encodeURIComponent(film.title)}`}>
-        <img className="film-poster" src={film.poster_url} alt={`${film.title} poster`}/>
-        <div className="film-identifier">
-          {film.title} ({film.year})
-        </div>
-      </Link>
-    </div>
+    <Link className="film-card" to={`/film/${encodeURIComponent(film.title)}`}>
+      <img className="film-poster" src={film.poster_url} alt={`${film.title} poster`}/>
+      <div className="film-identifier">
+        {film.title} ({film.year})
+      </div>
+    </Link>
   );
 };
 

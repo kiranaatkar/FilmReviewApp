@@ -14,6 +14,7 @@ const Home: React.FC = () => {
             const films = await FilmService.getFilms();
             setFilms(films);
           } catch (err: any) {
+            console.error(err);
             setError(err.message);
           }
         };

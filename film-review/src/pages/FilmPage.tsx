@@ -1,21 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Point, GraphConfig, Rating } from "../types/GraphTypes";
+import { Point, Rating } from "../types/GraphTypes";
+import { GRAPH_CONFIG } from "../config/GraphConfig";
 import { Film } from "../types/FilmTypes";
 import Graph from "../components/Graph";
 import FilmService from "../services/PeakReviewService";
-
-const GRAPH_CONFIG: GraphConfig = {
-  svgBoxWidth: 400,
-  svgBoxHeight: 400,
-  graphPadding: 20,
-  pointPadding: 30,
-  verticalGridPadding: 10,
-  graphWidth: 400 - 20, // width - padding
-  graphHeight: 400 - 20, // width - padding
-  horizontalGridLines: 5,
-  verticalGridLines: 2,
-};
 
 const FilmPage: React.FC = () => {
   const { titleParam } = useParams<{ titleParam: string }>();
@@ -23,6 +12,7 @@ const FilmPage: React.FC = () => {
   const [average, setAverage] = useState<Point[]>([]);
   const [film, setFilm] = useState<Film>();
   const [error, setError] = useState<string | null>(null);
+  const [showAvg, setShowAvg] = useState<boolean>(false);
 
   useEffect(() => {
     if (!titleParam) return;
@@ -35,13 +25,17 @@ const FilmPage: React.FC = () => {
           filmData.id
         );
         setAverage(averageData);
-
         const userRating: Rating = await FilmService.getUserRating(
           filmData.id,
           1
         );
+
         setPoints(userRating.points);
       } catch (err: any) {
+        console.log(err.response);
+        if (err.response === 404) {
+          setError("Film leg.");
+        }
         setError(err.message);
       }
     };
@@ -59,13 +53,15 @@ const FilmPage: React.FC = () => {
         points: points,
       };
       await FilmService.postRating(rating);
+      const averageData: Point[] = await FilmService.getAverageRating(film.id);
+      setAverage(averageData);
     } catch (err: any) {
       setError(err.message);
     }
   };
 
   const OnShowAverage = async () => {
-    console.log(average);
+    setShowAvg(!showAvg);
   };
 
   return (
@@ -79,10 +75,12 @@ const FilmPage: React.FC = () => {
           <Graph
             posterUrl={film.poster_url}
             data={points}
+            avgData={average}
+            showAvg={showAvg}
             config={GRAPH_CONFIG}
           />
           <button onClick={OnSubmit}>Submit</button>
-          <button onClick={OnShowAverage}>Show average</button>
+          <button onClick={OnShowAverage}>{showAvg ? "Hide Average" : "Show Average"}</button>
         </>
       ) : (
         <div>{error && <p className="error">{error}</p>}</div>

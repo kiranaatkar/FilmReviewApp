@@ -2,6 +2,7 @@ import client from "./client";
 import { Film } from "../types/FilmTypes";
 import { Rating } from "../types/GraphTypes";
 import { StatusCodes } from "http-status-codes";
+import { DEFAULT_POINTS } from "../config/GraphConfig";
 
 class FilmService {
   static async getFilms(): Promise<Film[]> {
@@ -56,12 +57,11 @@ class FilmService {
     }
   }
 
-  static async postRating(rating: Rating) {
+  static async postRating(rating: Rating): Promise<void> {
     try {
-      const response = await client.post(`/films/${rating.filmId}/rate`, {
+      await client.post(`/films/${rating.filmId}/rate`, {
         rating,
       });
-      return response.data;
     } catch (error: any) {
       console.error(`Error rating film ${rating.filmId}:`, error);
       switch (error.response.status) {
@@ -80,13 +80,15 @@ class FilmService {
       const response = await client.get(`/films/${filmId}/rating/${userId}`);
       return response.data;
     } catch (error: any) {
-      console.error(`Error fetching user rating for film ${filmId}:`, error);
       switch (error.response.status) {
         case StatusCodes.NOT_FOUND:
-          throw new Error("Rating not found.");
+          // return default rating 
+          return { userId, filmId, points: DEFAULT_POINTS };
         case StatusCodes.INTERNAL_SERVER_ERROR:
+          console.error(`Error fetching user rating for film ${filmId}:`, error);
           throw new Error("Failed to fetch user rating.");
         default:
+          console.error(`Error fetching user rating for film ${filmId}:`, error);
           throw new Error("An unexpected error occurred.");
       }
       //return { userId: 1, filmId: 1, points: [] };
