@@ -3,8 +3,47 @@ import { Film } from "../types/FilmTypes";
 import { Rating } from "../types/GraphTypes";
 import { StatusCodes } from "http-status-codes";
 import { DEFAULT_POINTS } from "../config/GraphConfig";
+import { TokenResponse } from "../types/UserTypes";
 
 class FilmService {
+  static async SignUp(username: string, password: string): Promise<TokenResponse | string> {
+    try {
+      const response = await client.post("/users/create", {
+        username, password
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error(`Error creating user ${username}:`, error);
+      switch (error.response.status) {
+        case StatusCodes.BAD_REQUEST:
+          throw new Error("Invalid rating.");
+        case StatusCodes.INTERNAL_SERVER_ERROR:
+          throw new Error("Failed to submit rating.");
+        default:
+          throw new Error("An unexpected error occurred.");
+      }
+    }
+  }
+
+  static async SignIn(username: string, password: string): Promise<TokenResponse | string> {
+    try {
+      const response = await client.post("/users/signIn", {
+        username, password
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error(`Error logging in user ${username}:`, error);
+      switch (error.response.status) {
+        case StatusCodes.BAD_REQUEST:
+          throw new Error("Invalid rating.");
+        case StatusCodes.INTERNAL_SERVER_ERROR:
+          throw new Error("Failed to submit rating.");
+        default:
+          throw new Error("An unexpected error occurred.");
+      }
+    }
+  }
+
   static async getFilms(): Promise<Film[]> {
     try {
       const response = await client.get("/films");
@@ -77,6 +116,7 @@ class FilmService {
 
   static async getUserRating(filmId: number, userId: number): Promise<Rating> {
     try {
+      console.log(filmId, userId);
       const response = await client.get(`/films/${filmId}/rating/${userId}`);
       return response.data;
     } catch (error: any) {

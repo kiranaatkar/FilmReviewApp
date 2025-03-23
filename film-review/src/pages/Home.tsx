@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Film } from "../types/FilmTypes";
-import FilmService from "../services/PeakReviewService";
+import FilmService from "../services/FilmService";
 import FilmCard from "../components/FilmCard";
 import "../styles/Home.css"
 
@@ -21,11 +21,13 @@ const Home: React.FC = () => {
         fetchFilms();
       }, []);
   return (
-    <div className="film-cards">
-      {error && <p className="error">{error}</p>}
-        {films.map((film) => (
-            <FilmCard key={film.id} film={film}/>
-        ))}
+    <div className="home">
+      <div className="film-cards">
+        {error && <p className="error">{error}</p>}
+          {films.map((film) => (
+              <FilmCard key={film.id} film={film}/>
+          ))}
+      </div>
     </div>
   );
 };

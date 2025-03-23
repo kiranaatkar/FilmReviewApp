@@ -4,7 +4,8 @@ import { Point, Rating } from "../types/GraphTypes";
 import { GRAPH_CONFIG } from "../config/GraphConfig";
 import { Film } from "../types/FilmTypes";
 import Graph from "../components/Graph";
-import FilmService from "../services/PeakReviewService";
+import FilmService from "../services/FilmService";
+import { useAuth } from "../context/AuthContext";
 
 const FilmPage: React.FC = () => {
   const { titleParam } = useParams<{ titleParam: string }>();
@@ -13,9 +14,10 @@ const FilmPage: React.FC = () => {
   const [film, setFilm] = useState<Film>();
   const [error, setError] = useState<string | null>(null);
   const [showAvg, setShowAvg] = useState<boolean>(false);
+  const { user } = useAuth();
 
   useEffect(() => {
-    if (!titleParam) return;
+    if (!titleParam || !user) return;
     const fetchFilmData = async () => {
       try {
         const filmData: Film = await FilmService.getFilm(titleParam);
@@ -27,7 +29,7 @@ const FilmPage: React.FC = () => {
         setAverage(averageData);
         const userRating: Rating = await FilmService.getUserRating(
           filmData.id,
-          1
+          user.id
         );
 
         setPoints(userRating.points);
@@ -41,14 +43,14 @@ const FilmPage: React.FC = () => {
     };
 
     fetchFilmData();
-  }, [titleParam]);
+  }, [titleParam, user]);
 
   const OnSubmit = async () => {
-    if (!film) return;
+    if (!film || !user) return;
 
     try {
-      const rating = {
-        userId: 1,
+      const rating: Rating = {
+        userId: user.id,
         filmId: film.id,
         points: points,
       };
