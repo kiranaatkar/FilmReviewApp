@@ -2,7 +2,7 @@ export type Rating = {
   userId: number;
   filmId: number;
   points: Point[];
-}
+};
 
 export interface Point {
   point_index: number;

@@ -3,13 +3,17 @@ import { Film } from "../types/FilmTypes";
 import { Rating } from "../types/GraphTypes";
 import { StatusCodes } from "http-status-codes";
 import { DEFAULT_POINTS } from "../config/GraphConfig";
-import { TokenResponse } from "../types/UserTypes";
+import { TokenResponse } from "../types/AuthTypes";
 
 class FilmService {
-  static async SignUp(username: string, password: string): Promise<TokenResponse | string> {
+  static async SignUp(
+    username: string,
+    password: string
+  ): Promise<TokenResponse | string> {
     try {
       const response = await client.post("/users/create", {
-        username, password
+        username,
+        password,
       });
       return response.data;
     } catch (error: any) {
@@ -25,10 +29,14 @@ class FilmService {
     }
   }
 
-  static async SignIn(username: string, password: string): Promise<TokenResponse | string> {
+  static async SignIn(
+    username: string,
+    password: string
+  ): Promise<TokenResponse | string> {
     try {
       const response = await client.post("/users/signIn", {
-        username, password
+        username,
+        password,
       });
       return response.data;
     } catch (error: any) {
@@ -55,20 +63,20 @@ class FilmService {
           throw new Error("Failed to fetch film titles. Please try again.");
         default:
           throw new Error("An unexpected error occurred.");
-          // return [
-          //   {
-          //     id: 1,
-          //     title: "LEG",
-          //     year: 2025,
-          //     poster_url: "/assets/lighthouse.png",
-          //   },
-          //   {
-          //     id: 2,
-          //     title: "Matrix",
-          //     year: 1999,
-          //     poster_url: "/assets/matrix.png",
-          //   },
-          // ];
+        // return [
+        //   {
+        //     id: 1,
+        //     title: "LEG",
+        //     year: 2025,
+        //     poster_url: "/assets/lighthouse.png",
+        //   },
+        //   {
+        //     id: 2,
+        //     title: "Matrix",
+        //     year: 1999,
+        //     poster_url: "/assets/matrix.png",
+        //   },
+        // ];
       }
     }
   }
@@ -122,13 +130,19 @@ class FilmService {
     } catch (error: any) {
       switch (error.response.status) {
         case StatusCodes.NOT_FOUND:
-          // return default rating 
+          // return default rating
           return { userId, filmId, points: DEFAULT_POINTS };
         case StatusCodes.INTERNAL_SERVER_ERROR:
-          console.error(`Error fetching user rating for film ${filmId}:`, error);
+          console.error(
+            `Error fetching user rating for film ${filmId}:`,
+            error
+          );
           throw new Error("Failed to fetch user rating.");
         default:
-          console.error(`Error fetching user rating for film ${filmId}:`, error);
+          console.error(
+            `Error fetching user rating for film ${filmId}:`,
+            error
+          );
           throw new Error("An unexpected error occurred.");
       }
       //return { userId: 1, filmId: 1, points: [] };

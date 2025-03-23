@@ -82,7 +82,9 @@ const FilmPage: React.FC = () => {
             config={GRAPH_CONFIG}
           />
           <button onClick={OnSubmit}>Submit</button>
-          <button onClick={OnShowAverage}>{showAvg ? "Hide Average" : "Show Average"}</button>
+          <button onClick={OnShowAverage}>
+            {showAvg ? "Hide Average" : "Show Average"}
+          </button>
         </>
       ) : (
         <div>{error && <p className="error">{error}</p>}</div>

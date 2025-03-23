@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FilmService from "../services/FilmService";
-import { TokenResponse } from "../types/UserTypes";
+import { TokenResponse } from "../types/AuthTypes";
 import { useAuth } from "../context/AuthContext";
 
 

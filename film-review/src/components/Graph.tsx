@@ -11,7 +11,13 @@ type Props = {
   config: GraphConfig;
 };
 
-const DraggableGraph: React.FC<Props> = ({ posterUrl, data, avgData, showAvg, config }) => {
+const DraggableGraph: React.FC<Props> = ({
+  posterUrl,
+  data,
+  avgData,
+  showAvg,
+  config,
+}) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
@@ -270,7 +276,6 @@ const DraggableGraph: React.FC<Props> = ({ posterUrl, data, avgData, showAvg, co
         .attr("opacity", 0.3)
         .attr("stroke-width", 8);
     };
-
 
     AddBackground(svg);
     AddGridLines(svg);
