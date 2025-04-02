@@ -9,4 +9,5 @@
 .film-cards {
     display: flex;
     flex-wrap: wrap;
+    width: 100%;
 } 
