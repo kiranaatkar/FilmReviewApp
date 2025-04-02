@@ -36,7 +36,7 @@ const FilmPage: React.FC = () => {
       } catch (err: any) {
         console.log(err.response);
         if (err.response === 404) {
-          setError("Film leg.");
+          setError("Film not found.");
         }
         setError(err.message);
       }
@@ -67,7 +67,7 @@ const FilmPage: React.FC = () => {
   };
 
   return (
-    <div className="film-card">
+    <div className="film-page">
       {film && points.length > 0 ? (
         <>
           <h2>

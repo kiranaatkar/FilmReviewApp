@@ -296,8 +296,8 @@ const DraggableGraph: React.FC<Props> = ({
     <div className="graph-wrapper">
       <svg
         ref={svgRef}
-        width={config.svgBoxWidth}
-        height={config.svgBoxHeight}
+        viewBox={`0 0 ${config.svgBoxWidth} ${config.svgBoxHeight}`}
+        preserveAspectRatio="xMidYMid meet"
       />
     </div>
   );

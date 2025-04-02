@@ -124,7 +124,6 @@ class FilmService {
 
   static async getUserRating(filmId: number, userId: number): Promise<Rating> {
     try {
-      console.log(filmId, userId);
       const response = await client.get(`/films/${filmId}/rating/${userId}`);
       return response.data;
     } catch (error: any) {
