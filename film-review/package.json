@@ -1,7 +1,7 @@
 {
   "name": "film-review",
   "version": "0.1.0",
-  "homepage": "https://kiranaatkar.github.io/react-gh-pages",
+  "homepage": "https://kiranaatkar.github.io/film-peak-reviews",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
