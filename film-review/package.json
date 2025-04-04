@@ -1,7 +1,7 @@
 {
   "name": "film-review",
   "version": "0.1.0",
-  "homepage": "https://kiranaatkar.github.io/film-peak-reviews",
+  "homepage": "https://kiranaatkar.github.io/FilmReviewApp",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
