@@ -11,11 +11,11 @@ const App: React.FC = () => {
     <Router>
       <Header />
       <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/signUp" element={<SignUpPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/film/:titleParam" element={<FilmPage />} />
+        <Route path="/FilmReviewApp/film-review/" element={<LoginPage />} />
+        <Route path="/FilmReviewApp/film-review/signUp" element={<SignUpPage />} />
+        <Route path="/FilmReviewApp/film-review/login" element={<LoginPage />} />
+        <Route path="/FilmReviewApp/film-review/home" element={<Home />} />
+        <Route path="/FilmReviewApp/film-review/film/:titleParam" element={<FilmPage />} />
       </Routes>
     </Router>
   );
