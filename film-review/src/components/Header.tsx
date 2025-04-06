@@ -14,7 +14,7 @@ const Header: React.FC = () => {
 
   return (
     <header>
-      <Link to="/FilmReviewApp/film-review/">
+      <Link to="/FilmReviewApp/film-review">
         <h1>Film Peak Reviews</h1>
       </Link>
       {user && (
