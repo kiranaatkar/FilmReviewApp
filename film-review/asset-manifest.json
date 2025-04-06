@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/FilmReviewApp/film-review/static/css/main.39b09c97.css",
-    "main.js": "/FilmReviewApp/film-review/static/js/main.9e0d7588.js",
+    "main.js": "/FilmReviewApp/film-review/static/js/main.b732265d.js",
     "static/js/453.e2ebb36b.chunk.js": "/FilmReviewApp/film-review/static/js/453.e2ebb36b.chunk.js",
     "index.html": "/FilmReviewApp/film-review/index.html",
     "main.39b09c97.css.map": "/FilmReviewApp/film-review/static/css/main.39b09c97.css.map",
-    "main.9e0d7588.js.map": "/FilmReviewApp/film-review/static/js/main.9e0d7588.js.map",
+    "main.b732265d.js.map": "/FilmReviewApp/film-review/static/js/main.b732265d.js.map",
     "453.e2ebb36b.chunk.js.map": "/FilmReviewApp/film-review/static/js/453.e2ebb36b.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.39b09c97.css",
-    "static/js/main.9e0d7588.js"
+    "static/js/main.b732265d.js"
   ]
 }
