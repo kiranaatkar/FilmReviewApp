@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Point, Rating } from "../types/GraphTypes";
 import { GRAPH_CONFIG } from "../config/GraphConfig";
 import { Film } from "../types/FilmTypes";
@@ -15,6 +15,7 @@ const FilmPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showAvg, setShowAvg] = useState<boolean>(false);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!titleParam || !user) return;
@@ -66,8 +67,15 @@ const FilmPage: React.FC = () => {
     setShowAvg(!showAvg);
   };
 
+  const redirectHome = () => {
+    navigate("/FilmReviewApp/film-review/home");
+  };
+
   return (
     <div className="film-page">
+      <button onClick={() => redirectHome()}>
+        Back
+      </button>
       {film && points.length > 0 ? (
         <>
           <h2>
