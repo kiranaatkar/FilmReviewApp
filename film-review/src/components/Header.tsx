@@ -9,26 +9,26 @@ const Header: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/FilmReviewApp/film-review/login");
+    navigate("/login");
   };
 
   return (
     <header>
-      <Link to="/FilmReviewApp/film-review/home">
+      <Link to="/home">
         <h1>Film Peak Reviews</h1>
       </Link>
       {user && (
         <button onClick={() => handleLogout()}>
-          <Link to="/FilmReviewApp/film-review/Login">Log Out</Link>
+          <Link to="/Login">Log Out</Link>
         </button>
       )}
       {!user && (
         <div>
           <button>
-            <Link to="/FilmReviewApp/film-review/SignUp">Sign Up</Link>
+            <Link to="/SignUp">Sign Up</Link>
           </button>
           <button>
-            <Link to="/FilmReviewApp/film-review/Login">Login</Link>
+            <Link to="/Login">Login</Link>
           </button>
         </div>
       )}

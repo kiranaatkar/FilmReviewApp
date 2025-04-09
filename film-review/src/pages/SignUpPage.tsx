@@ -13,7 +13,7 @@ const SignUpPage: React.FC = () => {
   const { login, user } = useAuth();
 
   useEffect(() => {
-    if (user) navigate("/FilmReviewApp/film-review/home");
+    if (user) navigate("/home");
   }, [user, navigate]);
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -25,7 +25,7 @@ const SignUpPage: React.FC = () => {
 
       if (typeof res !== "string") {
         login(res.token);
-        navigate("/FilmReviewApp/film-review/home");
+        navigate("/home");
       } else {
         setMessage(`❌ ${res}`);
       }

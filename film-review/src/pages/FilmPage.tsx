@@ -68,7 +68,7 @@ const FilmPage: React.FC = () => {
   };
 
   const redirectHome = () => {
-    navigate("/FilmReviewApp/film-review/home");
+    navigate("/home");
   };
 
   return (

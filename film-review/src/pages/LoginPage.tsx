@@ -13,7 +13,7 @@ const LoginPage: React.FC = () => {
   const { login, user } = useAuth();
 
   useEffect(() => {
-      if (user) navigate("/FilmReviewApp/film-review/home");
+      if (user) navigate("/home");
     }, [user, navigate]);
 
   const handleSignUp = async (e: React.FormEvent) => {
