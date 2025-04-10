@@ -1,5 +1,5 @@
 import React from "react";
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import FilmPage from "./pages/FilmPage";
 import Header from "./components/Header";
@@ -8,7 +8,7 @@ import LoginPage from "./pages/LoginPage";
 
 const App: React.FC = () => {
   return (
-    <Router basename="/FilmReviewApp/film-review">
+    <Router>
       <Header />
       <Routes>
         <Route path="/" element={<LoginPage />} />
