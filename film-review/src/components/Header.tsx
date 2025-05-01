@@ -18,25 +18,27 @@ const Header: React.FC = () => {
 
   return (
     <header>
-      <div className="triangle-svg" />
-      <div className="header-main-content">
-        {user && (
-          <Link to="/profile" className="profile-icon" title="View Profile">
-            {getInitials(user.username || "U N")}
+      <div className="header-content">
+        <div className="triangle-svg" />
+        <div className="header-links">
+          {user && (
+            <Link to="/profile" className="profile-icon" title="View Profile">
+              {getInitials(user.username || "U N")}
+            </Link>
+          )}
+          <Link to="/home">
+            <MainTitle />
           </Link>
-        )}
-        <Link to="/home">
-          <MainTitle />
-        </Link>
 
-        <a
-          href="https://www.instagram.com/yourusername"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="instagram-link"
-        >
-          <InstagramIcon size={36} />
-        </a>
+          <a
+            href="https://www.instagram.com/yourusername"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="instagram-link"
+          >
+            <InstagramIcon size={36} />
+          </a>
+        </div>
       </div>
     </header>
   );

@@ -1,2 +1,62 @@
-footer {
+.footer {
+    padding: 12px 24px 48px;
+    background-color: #212121;
+    border-top: 1px solid #ddd;
+  }
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+  
+  .graph-filter,
+  .film-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .search-bar {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .footer-search {
+    width: 50%;
+    max-width: 300px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+  }
+  
+  .triangle {
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 14px solid;
+  }
+  
+  .triangle.red {
+    border-bottom-color: #FD0000;
+  }
+  
+  .triangle.green {
+    border-bottom-color: #0D6901;
+  }
+  
+  .triangle.blue {
+    border-bottom-color: #0079DD;
+  }
+  
+  .film-filter svg {
+    cursor: pointer;
+    fill: #555;
+    transition: fill 0.2s ease;
+  }
+  
+  .film-filter svg:hover {
+    fill: #000;
+  }
+  
