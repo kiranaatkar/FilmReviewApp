@@ -1,37 +1,43 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../styles/Header.css";
 import { useAuth } from "../context/AuthContext";
+import InstagramIcon from "../svgs/InstagramIcon";
+import MainTitle from "../svgs/MainTitle";
 
 const Header: React.FC = () => {
-  const { logout, user } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
   };
 
   return (
     <header>
-      <Link to="/home">
-        <h1>Film Peak Reviews</h1>
-      </Link>
-      {user && (
-        <button onClick={() => handleLogout()}>
-          <Link to="/Login">Log Out</Link>
-        </button>
-      )}
-      {!user && (
-        <div>
-          <button>
-            <Link to="/SignUp">Sign Up</Link>
-          </button>
-          <button>
-            <Link to="/Login">Login</Link>
-          </button>
-        </div>
-      )}
+      <div className="triangle-svg" />
+      <div className="header-main-content">
+        {user && (
+          <Link to="/profile" className="profile-icon" title="View Profile">
+            {getInitials(user.username || "U N")}
+          </Link>
+        )}
+        <Link to="/home">
+          <MainTitle />
+        </Link>
+
+        <a
+          href="https://www.instagram.com/yourusername"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="instagram-link"
+        >
+          <InstagramIcon size={36} />
+        </a>
+      </div>
     </header>
   );
 };
