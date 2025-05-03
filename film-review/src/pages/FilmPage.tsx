@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Point, Rating } from "../types/GraphTypes";
-import { GRAPH_CONFIG } from "../config/GraphConfig";
 import { Film } from "../types/FilmTypes";
 import Graph from "../components/Graph";
 import FilmService from "../services/FilmService";
@@ -73,7 +72,7 @@ const FilmPage: React.FC = () => {
 
   return (
     <div className="film-page">
-      <button onClick={() => redirectHome()}>
+      <button onClick={redirectHome}>
         Back
       </button>
       {film && points.length > 0 ? (
@@ -87,7 +86,6 @@ const FilmPage: React.FC = () => {
             data={points}
             avgData={average}
             showAvg={showAvg}
-            config={GRAPH_CONFIG}
           />
           <button onClick={OnSubmit}>Submit</button>
           <button onClick={OnShowAverage}>

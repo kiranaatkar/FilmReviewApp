@@ -31,7 +31,7 @@ const Header: React.FC = () => {
           </Link>
 
           <a
-            href="https://www.instagram.com/yourusername"
+            href="https://www.instagram.com/film_peak_reviews"
             target="_blank"
             rel="noopener noreferrer"
             className="instagram-link"
