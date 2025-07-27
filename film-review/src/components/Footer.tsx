@@ -1,17 +1,19 @@
 import React from "react";
 import "../styles/Footer.css";
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  onSearch: (query: string) => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ onSearch }) => {
 
   const PopupGraphFiler = () => {
     // Function to handle the graph filter popup
     console.log("Graph filter popup opened");
   };
-
+  
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // Function to handle search input
-    const query = event.target.value;
-    console.log("Search query:", query);
+    onSearch(event.target.value);
   };
 
   const handleFilmFilter = () => {
@@ -37,15 +39,10 @@ const Footer: React.FC = () => {
         </div>
 
         <button className="film-filter" title="Filter" onClick={handleFilmFilter}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24"
-            width="24"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path d="M3 6h18v2H3V6zm4 5h10v2H7v-2zm2 5h6v2H9v-2z" />
-          </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="45" height="35" viewBox="0 0 45 35" fill="none">
+          <path d="M22.5 28L3.01443 7L41.9856 7L22.5 28Z" fill="white"/>
+          <rect x="19" y="15" width="7" height="20" fill="white"/>
+        </svg>
         </button>
       </div>
     </footer>

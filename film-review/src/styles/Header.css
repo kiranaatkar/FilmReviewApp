@@ -28,7 +28,7 @@ header a {
   background-color: #212121;
 }
 
-.triangle-svg {
+header .triangle-svg {
   width: 35px;
   height: 35px;
   background: none;
