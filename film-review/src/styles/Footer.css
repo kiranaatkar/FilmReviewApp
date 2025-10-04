@@ -1,9 +1,8 @@
 footer {
   background-color: #212121;
   border-top: 1px solid #ddd;
-  padding: 12px 0px;
+  padding: 12px 0px 40px 0px;
   flex-shrink: 0;
-  height: 76px; 
 }
   .footer-content {
     position: relative;
