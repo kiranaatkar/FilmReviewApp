@@ -1,11 +1,9 @@
 header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 60px;
-  z-index: 1000;
   color: #ffffff;
   border-bottom: 1px solid #ddd;
+  flex-shrink: 0;
+  z-index: 10;
+  width: 100%;
 }
 
 .header-links {
@@ -26,6 +24,7 @@ header a {
   flex-direction: column;
   align-items: center;
   background-color: #212121;
+  justify-content: flex-end;
 }
 
 header .triangle-svg {

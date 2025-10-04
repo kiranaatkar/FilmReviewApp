@@ -1,13 +1,30 @@
 .home {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 .film-cards {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
+  display: grid;
+  width: 100%;
+  max-width: 1200px;
+  gap: 20px;
+  grid-template-columns: repeat(2, 1fr);
+  justify-items: start;
+  padding: 10px;
+}
+
+/* 📱 Tablet (≥ 768px): 3 columns */
+@media (min-width: 768px) {
+  .film-cards {
+    grid-template-columns: repeat(3, 1fr);
   }
-  
+}
+
+/* 💻 Desktop (≥ 1024px): 4 columns */
+@media (min-width: 1024px) {
+  .film-cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
