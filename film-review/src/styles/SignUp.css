@@ -1,0 +1,115 @@
+.sign-up-page {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, #2c2c2c 0%, #121212 100%);
+  color: white;
+  font-family: 'Inter', sans-serif;
+  padding: 20px;
+}
+
+.sign-up-form {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+}
+
+.sign-up-form:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.sign-up-form h2 {
+  margin-bottom: 24px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #ffffff;
+}
+
+.sign-up-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sign-up-form input {
+  padding: 14px 16px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  outline: none;
+  transition: background 0.2s ease;
+}
+
+.sign-up-form input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.sign-up-form input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid #fd0000;
+}
+
+.sign-up-form button {
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #fd0000 0%, #ff4d4d 100%);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 8px;
+}
+
+.sign-up-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(253, 0, 0, 0.4);
+}
+
+.sign-up-form p {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: #ff4d4d;
+  word-wrap: break-word;
+}
+
+.sign-up-form .signup-redirect {
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.sign-up-form .login-redirect a {
+  color: #fd0000;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.sign-up-form .login-redirect a:hover {
+  text-decoration: underline;
+}
+
+
+@media (max-width: 480px) {
+  .sign-up-form {
+    padding: 30px 24px;
+    border-radius: 16px;
+  }
+
+  .sign-up-form h2 {
+    font-size: 1.5rem;
+  }
+}

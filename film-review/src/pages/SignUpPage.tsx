@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import FilmService from "../services/FilmService";
 import { TokenResponse } from "../types/AuthTypes";
 import { useAuth } from "../context/AuthContext";
+import "../styles/SignUp.css";
+import { Link } from "react-router-dom";
 
 
 const SignUpPage: React.FC = () => {
@@ -58,6 +60,10 @@ const SignUpPage: React.FC = () => {
 
           <button type="submit">Sign Up</button>
         </form>
+
+        <p className="login-redirect">
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
 
         {message && <p>{message}</p>}
       </div>

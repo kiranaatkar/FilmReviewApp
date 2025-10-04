@@ -10,15 +10,18 @@ const OnboardingPage: React.FC = () => {
   return (
     <div className="onboarding-page">
         <div className="icon">
-            <Triangle />
-            <MainTitleWrapped fill="white"/>
+            <div className="svg-container">
+                <Triangle />
+                <MainTitleWrapped fill="white"/>
+            </div>
+            
         </div>
         <div className="buttons-container">
-            <Link to="/sign-up" className="sign-up-button">
-                <button className="sign-up-button-text">Sign Up</button>
-            </Link>
             <Link to="/login" className="login-button">
                 <button className="login-button-text">Login</button>
+            </Link>
+            <Link to="/sign-up" className="signup-button">
+                <button className="sign-up-button-text">Sign Up</button>
             </Link>
         </div>
     </div>

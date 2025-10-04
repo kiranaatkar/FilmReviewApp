@@ -14,5 +14,16 @@ html, body, #root {
 .main-content {
   flex: 1;
   padding: 130px 0px 76px 0px;
-  overflow-y: auto;
+}
+
+.main-content:has(.onboarding-page) {
+  padding: 0;
+}
+
+.main-content:has(.login-page) {
+  padding: 0;
+}
+
+.main-content:has(.sign-up-page) {
+  padding: 0;
 }
