@@ -1,0 +1,136 @@
+.film-filter-popup {
+  background: #1a1a1a;
+  color: #f5f5f5;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  transition: all 0.3s ease;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filter-title {
+  text-align: center;
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: #ff3333;
+  font-weight: 600;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-group label {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.year-range {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.year-range input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #121212;
+  color: #fff;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.year-range input:focus {
+  border-color: #ff3333;
+}
+
+.range-sep {
+  color: #777;
+  font-size: 1rem;
+}
+
+select {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #121212;
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+  transition: border 0.2s ease;
+}
+
+select:focus {
+  border-color: #ff3333;
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.apply-btn,
+.reset-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.apply-btn {
+  background: #ff3333;
+  color: white;
+  border: none;
+}
+
+.apply-btn:hover {
+  background: #ff4d4d;
+  transform: translateY(-2px);
+}
+
+.reset-btn {
+  background: transparent;
+  border: 1px solid #555;
+  color: #ccc;
+}
+
+.reset-btn:hover {
+  border-color: #ff3333;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 480px) {
+  .film-filter-popup {
+    padding: 15px;
+    gap: 12px;
+  }
+  .filter-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

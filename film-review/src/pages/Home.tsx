@@ -16,16 +16,6 @@ const Home: React.FC<HomeProps> = ({ films }) => {
         ) : (
           films.map((film) => <FilmCard key={film.id} film={film} />)
         )}
-        {films.length === 0 ? (
-          <p className="error">No films found.</p>
-        ) : (
-          films.map((film) => <FilmCard key={film.id} film={film} />)
-        )}
-        {films.length === 0 ? (
-          <p className="error">No films found.</p>
-        ) : (
-          films.map((film) => <FilmCard key={film.id} film={film} />)
-        )}
       </div>
     </div>
   );

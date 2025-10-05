@@ -1,0 +1,47 @@
+.graph-filter-popup {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.graph-filter-popup button {
+  width: 20%;
+}
+
+/* Each button wraps the triangle + label */
+.filter-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+/* subtle hover */
+.filter-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+}
+
+/* label below triangle */
+.filter-btn .label {
+  font-size: 13px;
+  color: #dcdcdc;
+}
+
+/* target the inline SVG if you want a fixed size in CSS as well */
+.triangle-svg {
+  display: block;
+}
+
+.triangle-svg polygon {
+  transition: fill 0.2s ease, stroke 0.2s ease, stroke-width 0.2s ease;
+}

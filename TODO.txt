@@ -1,0 +1,5 @@
+Tasks:
+tidy up api calls on home page. implement intersection observer and pagination.
+
+Bugs:
+Fix bug when clicking graph filter options the others raise up
