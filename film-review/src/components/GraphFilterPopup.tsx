@@ -20,22 +20,13 @@ const Tri: React.FC<{
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden
       focusable="false"
-      style={{
-        overflow: "visible",
-        display: "block",       
-        flexShrink: 0, 
-      }}
     >
       <polygon
         points="20,2 2,33 38,33"
         fill={filled ? color : "transparent"}
-        stroke={filled ? "transparent" : color}
-        strokeWidth={2.5}
-        strokeLinejoin="round"
-        vectorEffect="non-scaling-stroke"
-        shapeRendering="geometricPrecision"
+        stroke={color}
+        strokeWidth={2}
       />
-
     </svg>
   );
 };
