@@ -38,11 +38,7 @@ const Footer: React.FC<FooterProps> = ({ onSearch }) => {
       <div className="footer-content">
         {/* Popups */}
         <div className="filter-popup">
-          {isGraphFilterOpen && (
-            <GraphFilterPopup
-              onApply={(filters) => console.log("Filters applied:", filters)}
-            />
-          )}
+          {isGraphFilterOpen && <GraphFilterPopup/>}
           {isFilmFilterOpen && (
             <FilmFilterPopup
               onApply={(filters) => console.log("Filters applied:", filters)}

@@ -5,6 +5,7 @@ import { Film } from "../types/FilmTypes";
 import Graph from "../components/Graph";
 import FilmService from "../services/FilmService";
 import { useAuth } from "../context/AuthContext";
+import { useGraphFilterStore } from "../store/useGraphFilterStore";
 
 const FilmPage: React.FC = () => {
   const { titleParam } = useParams<{ titleParam: string }>();
@@ -12,8 +13,9 @@ const FilmPage: React.FC = () => {
   const [average, setAverage] = useState<Point[]>([]);
   const [film, setFilm] = useState<Film>();
   const [error, setError] = useState<string | null>(null);
-  const [showAvg, setShowAvg] = useState<boolean>(false);
   const { user } = useAuth();
+  const { audience, you } = useGraphFilterStore();
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -62,10 +64,6 @@ const FilmPage: React.FC = () => {
     }
   };
 
-  const OnShowAverage = async () => {
-    setShowAvg(!showAvg);
-  };
-
   const redirectHome = () => {
     navigate("/home");
   };
@@ -85,12 +83,10 @@ const FilmPage: React.FC = () => {
             posterUrl={film.poster_url}
             data={points}
             avgData={average}
-            showAvg={showAvg}
+            showAvg={audience}
+            showUserPoints={you}
           />
           <button onClick={OnSubmit}>Submit</button>
-          <button onClick={OnShowAverage}>
-            {showAvg ? "Hide Average" : "Show Average"}
-          </button>
         </>
       ) : (
         <div>{error && <p className="error">{error}</p>}</div>
