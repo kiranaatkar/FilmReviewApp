@@ -1,92 +1,101 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState, useMemo } from "react";
+import { useParams } from "react-router-dom";
 import { Point, Rating } from "../types/GraphTypes";
 import { Film } from "../types/FilmTypes";
 import Graph from "../components/Graph";
 import FilmService from "../services/FilmService";
 import { useAuth } from "../context/AuthContext";
 import { useGraphFilterStore } from "../store/useGraphFilterStore";
+import "../styles/FilmPage.css";
 
 const FilmPage: React.FC = () => {
   const { titleParam } = useParams<{ titleParam: string }>();
-  const [points, setPoints] = useState<Point[]>([]);
-  const [average, setAverage] = useState<Point[]>([]);
+  const [points, setUserRating] = useState<Point[]>([]);
+  const [average, setAverageRating] = useState<Point[]>([]);
+  const [filmPeakPoints, setFilmPeakRating] = useState<Point[]>([]);
   const [film, setFilm] = useState<Film>();
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
-  const { audience, you } = useGraphFilterStore();
+  const { filmPeak, audience, you } = useGraphFilterStore();
 
-  const navigate = useNavigate();
-
+  // Fetch film + ratings
   useEffect(() => {
     if (!titleParam || !user) return;
-    const fetchFilmData = async () => {
+
+    (async () => {
       try {
-        const filmData: Film = await FilmService.getFilm(titleParam);
+        const filmData = await FilmService.getFilm(titleParam);
         setFilm(filmData);
 
-        const averageData: Point[] = await FilmService.getAverageRating(
-          filmData.id
-        );
-        setAverage(averageData);
-        const userRating: Rating = await FilmService.getUserRating(
-          filmData.id,
-          user.id
-        );
+        const [avg, rating, filmPeakRating] = await Promise.all([
+          FilmService.getAverageRating(filmData.id),
+          FilmService.getUserRating(filmData.id, user.id),
+          FilmService.getUserRating(filmData.id, 4), // temp hack
+        ]);
 
-        setPoints(userRating.points);
+        setFilmPeakRating(filmPeakRating.points);
+        setAverageRating(avg);
+        setUserRating(rating.points);
       } catch (err: any) {
-        console.log(err.response);
-        if (err.response === 404) {
-          setError("Film not found.");
-        }
-        setError(err.message);
+        setError(err.message ?? "Failed to fetch film data");
       }
-    };
-
-    fetchFilmData();
+    })();
   }, [titleParam, user]);
+
+  // Memoize the arrays so they don’t break Graph’s dependency list
+  const memoizedFilmPeakPoints = useMemo(() => filmPeakPoints, [filmPeakPoints]);
+  const memoizedAverage = useMemo(() => average, [average]);
+  const memoizedPoints = useMemo(() => points, [points]);
 
   const OnSubmit = async () => {
     if (!film || !user) return;
+    const rating: Rating = { userId: user.id, filmId: film.id, points };
 
     try {
-      const rating: Rating = {
-        userId: user.id,
-        filmId: film.id,
-        points: points,
-      };
       await FilmService.postRating(rating);
-      const averageData: Point[] = await FilmService.getAverageRating(film.id);
-      setAverage(averageData);
+      setAverageRating(await FilmService.getAverageRating(film.id));
     } catch (err: any) {
       setError(err.message);
     }
   };
 
-  const redirectHome = () => {
-    navigate("/home");
-  };
+  const OnEdit = () => console.log("Edit review clicked");
 
   return (
     <div className="film-page">
-      <button onClick={redirectHome}>
-        Back
-      </button>
       {film && points.length > 0 ? (
         <>
           <h2>
             <span className="film-title">{film.title}</span>{" "}
             <span className="film-year">({film.year})</span>
           </h2>
+
           <Graph
             posterUrl={film.poster_url}
-            data={points}
-            avgData={average}
-            showAvg={audience}
-            showUserPoints={you}
+            filmPeakPoints={memoizedFilmPeakPoints}
+            data={memoizedPoints}
+            audienceData={memoizedAverage}
+            showFilmPeak={filmPeak}
+            showAudience={audience}
+            showYou={you}
           />
-          <button onClick={OnSubmit}>Submit</button>
+
+          <div className="review-control-buttons">
+            <button className="edit-button" onClick={OnEdit}>
+              Edit Review
+            </button>
+            <button className="submit-button" onClick={OnSubmit}>
+              Submit Review
+            </button>
+          </div>
+
+          <div className="film-information">
+            <p><strong>Runtime:</strong> placeholder</p>
+            <p><strong>Genre:</strong> placeholder</p>
+            <p><strong>Rating:</strong> placeholder</p>
+            <p><strong>Key Actors:</strong> placeholder</p>
+            <p><strong>Director:</strong> placeholder</p>
+          </div>
         </>
       ) : (
         <div>{error && <p className="error">{error}</p>}</div>

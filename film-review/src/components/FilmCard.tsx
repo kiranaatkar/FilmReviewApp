@@ -35,20 +35,10 @@ const FilmCard: React.FC<Props> = ({ film }) => {
 
   return (
     <Link className="film-card" to={`/film/${encodeURIComponent(film.title)}`}>
-      {/* <div className="film-card-inner">
-        <img
-          className="film-poster"
-          src={film.poster_url}
-          alt={`${film.title} poster`}
-        />
-      </div>
-      <div className="film-identifier">
-        {film.title} ({film.year})
-      </div> */}
       <StaticGraph
-  posterUrl={film.poster_url}
-  data={average} // or film.graphPoints if you prefer raw
-/>
+        posterUrl={film.poster_url}
+        data={average} // or film.graphPoints if you prefer raw
+      />
 
     </Link>
   );

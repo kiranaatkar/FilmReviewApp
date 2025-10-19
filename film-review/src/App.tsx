@@ -5,6 +5,7 @@ import FilmPage from "./pages/FilmPage";
 import Header from "./components/Header";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
+import ProfilePage from "./pages/ProfilePage";
 import Footer from "./components/Footer";
 import FilmService from "./services/FilmService";
 import { Film } from "./types/FilmTypes";
@@ -45,6 +46,7 @@ const AppContent: React.FC = () => {
           <Route path="/" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/onboarding" element={<OnboardingPage />} />
           <Route path="/home" element={<Home films={filteredFilms} />} />
           <Route path="/film/:titleParam" element={<FilmPage />} />

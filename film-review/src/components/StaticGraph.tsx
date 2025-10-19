@@ -1,13 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { Point, GraphConfig } from "../types/GraphTypes";
+import { Point } from "../types/GraphTypes";
 import { addBackground, addGridLinesAndLabels } from "../utils/GraphUtils";
 import { GRAPH_CONFIG as config } from "../config/GraphConfig";
 
 
 type Props = {
   posterUrl: string;
-  data: Point[]; // You can use avgData or raw data here
+  data: Point[];
 };
 
 const StaticGraph: React.FC<Props> = ({ posterUrl, data }) => {
@@ -38,7 +38,7 @@ const StaticGraph: React.FC<Props> = ({ posterUrl, data }) => {
       .attr("stroke", "red")
       .attr("stroke-width", 8)
       .attr("opacity", 0.5);
-  }, [posterUrl, data, config]);
+  }, [posterUrl, data]);
 
   return (
     <svg
