@@ -71,7 +71,7 @@ const FilmPage: React.FC = () => {
           </h2>
 
           <Graph
-            posterUrl={film.poster_url}
+            posterUrl={film.posterUrl}
             filmPeakPoints={memoizedFilmPeakPoints}
             data={memoizedPoints}
             audienceData={memoizedAverage}
@@ -90,12 +90,30 @@ const FilmPage: React.FC = () => {
           </div>
 
           <div className="film-information">
-            <p><strong>Runtime:</strong> placeholder</p>
-            <p><strong>Genre:</strong> placeholder</p>
-            <p><strong>Rating:</strong> placeholder</p>
-            <p><strong>Key Actors:</strong> placeholder</p>
-            <p><strong>Director:</strong> placeholder</p>
+            <p><strong>Runtime:</strong> {film.runtime} min</p>
+
+            <p>
+              <strong>Genres:</strong>{" "}
+              {film.genres?.length
+                ? film.genres.map(g => g.name).join(", ")
+                : "No genres listed"}
+            </p>
+
+            <p>
+              <strong>Director:</strong>{" "}
+              {film.directors?.length
+                ? film.directors.map(d => d.name).join(", ")
+                : "Unknown"}
+            </p>
+
+            <p>
+              <strong>Key Actors:</strong>{" "}
+              {film.actors?.length
+                ? film.actors.map(a => a.name).join(", ")
+                : "No actors listed"}
+            </p>
           </div>
+
         </>
       ) : (
         <div>{error && <p className="error">{error}</p>}</div>

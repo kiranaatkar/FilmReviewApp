@@ -1,5 +1,11 @@
+NEXT TASK:
+show new icon if film is within last 7 days
+
+
 Tasks:
 tidy up api calls on home page. implement intersection observer and pagination.
 
 Bugs:
+WHY IS POSTER NOT SHOWING
+when you deselect you from graph filter, the peak triangle remains
 Fix bug when clicking graph filter options the others raise up
