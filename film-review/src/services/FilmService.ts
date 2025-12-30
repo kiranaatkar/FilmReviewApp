@@ -55,6 +55,7 @@ class FilmService {
   static async getFilms(): Promise<Film[]> {
     try {
       const response = await client.get("/films");
+      console.log(response.data);
       return response.data;
     } catch (error: any) {
       console.error("Error fetching film titles:", error);

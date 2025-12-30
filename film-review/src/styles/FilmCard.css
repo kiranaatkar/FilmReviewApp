@@ -55,3 +55,19 @@
     overflow: hidden;
   }
   
+  .new-badge {
+  position: absolute;
+  bottom: 5px;
+  left: 0px;
+
+  background-color: #E95A5A;
+  color: white;
+
+  padding: 6px 14px;
+  border-radius: 999px;
+
+  z-index: 10;
+  pointer-events: none;
+
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}

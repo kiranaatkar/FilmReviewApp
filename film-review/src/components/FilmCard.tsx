@@ -18,11 +18,16 @@ const FilmCard: React.FC<Props> = ({ film }) => {
 
   useEffect(() => {
     if (!film || !user) return;
-    console.log({film})
     const fetchFilmData = async () => {
+      const isWithinLast7Days = (isoString: string): boolean => {
+        const date = new Date(isoString);
+        const now = new Date();
+        const sevenDaysAgo = new Date(now);     
+        sevenDaysAgo.setDate(now.getDate() - 7);
+        return date >= sevenDaysAgo && date <= now;
+      };
       try {
         const filmData: Film = await FilmService.getFilm(film.title);
-
         const averageData: Point[] = await FilmService.getAverageRating(
           filmData.id
         );
@@ -36,24 +41,14 @@ const FilmCard: React.FC<Props> = ({ film }) => {
     fetchFilmData();
   }, [film, user]);
 
-  const isWithinLast7Days = (isoString: string): boolean => {
-    console.log(isoString)
-    const date = new Date(isoString);
-    console.log({film, date})
-    const now = new Date();
-    const sevenDaysAgo = new Date(now);      
-    sevenDaysAgo.setDate(now.getDate() - 7);
-
-    return date >= sevenDaysAgo && date <= now;
-  };
+  
 
   return (
     <Link className="film-card" to={`/film/${encodeURIComponent(film.title)}`}>
       <StaticGraph
         posterUrl={film.posterUrl}
-        data={average} // or film.graphPoints if you prefer raw
+        data={average}
       />
-
       {isNew && <div className="new-badge">New</div>}
 
     </Link>
