@@ -1,8 +1,7 @@
 NEXT TASK:
-Buggy filtering on film page
+when you deselect you from graph filter, the peak triangle remains
 
 Tasks:
 tidy up api calls on home page. implement intersection observer and pagination.
 
 Bugs:
-when you deselect you from graph filter, the peak triangle remains

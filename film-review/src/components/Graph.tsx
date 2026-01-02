@@ -70,6 +70,7 @@ const Graph: React.FC<Props> = ({
     filmLayer.selectAll("*").remove();
     audienceLayer.selectAll("*").remove();
     userLayer.selectAll("*").remove();
+    svg.selectAll(".peak-triangle").remove();
 
     // Helper to create a line generator
     const makeLine = () =>
