@@ -30,12 +30,13 @@ const FilmPage: React.FC = () => {
         const [avg, rating, filmPeakRating] = await Promise.all([
           FilmService.getAverageRating(filmData.id),
           FilmService.getUserRating(filmData.id, user.id),
-          FilmService.getUserRating(filmData.id, 4), // temp hack
+          FilmService.getUserRating(filmData.id, 1), // temp hack for film peak (userId 1 is admin)
         ]);
 
-        setFilmPeakRating(filmPeakRating.points);
-        setAverageRating(avg);
-        setUserRating(rating.points);
+        // create clones to avoid mutating state
+        setFilmPeakRating(filmPeakRating.points.map(p => ({ ...p })));
+        setAverageRating(avg.map(p => ({ ...p })));
+        setUserRating(rating.points.map(p => ({ ...p })));
       } catch (err: any) {
         setError(err.message ?? "Failed to fetch film data");
       }
@@ -71,6 +72,7 @@ const FilmPage: React.FC = () => {
           </h2>
 
           <Graph
+            key={film.id}
             posterUrl={film.posterUrl}
             filmPeakPoints={memoizedFilmPeakPoints}
             data={memoizedPoints}

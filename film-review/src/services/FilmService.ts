@@ -1,6 +1,6 @@
 import client from "./client";
 import { Film } from "../types/FilmTypes";
-import { Rating } from "../types/GraphTypes";
+import { Point, Rating } from "../types/GraphTypes";
 import { StatusCodes } from "http-status-codes";
 import { DEFAULT_POINTS } from "../config/GraphConfig";
 import { TokenResponse } from "../types/AuthTypes";
@@ -55,7 +55,6 @@ class FilmService {
   static async getFilms(): Promise<Film[]> {
     try {
       const response = await client.get("/films");
-      console.log(response.data);
       return response.data;
     } catch (error: any) {
       console.error("Error fetching film titles:", error);
@@ -149,7 +148,7 @@ class FilmService {
     }
   }
 
-  static async getAverageRating(filmId: number) {
+  static async getAverageRating(filmId: number): Promise<Point[]> {
     try {
       const response = await client.get(`/films/${filmId}/average`);
       return response.data;
