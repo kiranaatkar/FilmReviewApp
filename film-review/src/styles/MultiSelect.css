@@ -1,0 +1,83 @@
+.multi-trigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #121212;
+  color: #fff;
+  cursor: pointer;
+  width: 100%;
+}
+
+.multi-trigger:hover {
+  border-color: #ff3333;
+}
+
+/* Chevron */
+.multi-trigger svg {
+    width: 10%;
+}
+
+.multi-content {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  max-height: 250px;
+  overflow-y: auto;
+  width: 220px;
+}
+
+.multi-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  cursor: pointer;
+  color: #ddd;
+}
+
+.multi-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.multi-checkbox {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #777;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.multi-container,
+.inline-select {
+  width: 100%;
+}
+
+.multi-inline,
+.inline-select-options {
+  width: 100%;
+  background: #1a1a1a;
+  border-radius: 8px;
+  margin-top: 6px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: expand 0.2s ease;
+}
+
+@keyframes expand {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

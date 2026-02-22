@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import GraphFilterPopup from "./GraphFilterPopup";
 import FilmFilterPopup from "./FilmFilterPopup";
 import "../styles/Footer.css";
+import { Genre } from "../types/FilmTypes";
 
 interface FooterProps {
   onSearch: (query: string) => void;
+  genres: Genre[];
+  onApplyFilters: (filters: any) => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ onSearch }) => {
+const Footer: React.FC<FooterProps> = ({ onSearch, genres, onApplyFilters }) => {
   const [isGraphFilterOpen, setIsGraphFilterOpen] = useState(false);
   const [isFilmFilterOpen, setIsFilmFilterOpen] = useState(false);
 
@@ -32,7 +35,7 @@ const Footer: React.FC<FooterProps> = ({ onSearch }) => {
     <footer
       className={`footer ${
         isGraphFilterOpen ? "graph-filter-popup-open" : 
-        isFilmFilterOpen ? "film-filter-popup-open" :""
+        isFilmFilterOpen ? "film-filter-popup-open" : ""
       }`}
     >
       <div className="footer-content">
@@ -41,8 +44,8 @@ const Footer: React.FC<FooterProps> = ({ onSearch }) => {
           {isGraphFilterOpen && <GraphFilterPopup/>}
           {isFilmFilterOpen && (
             <FilmFilterPopup
-              onApply={(filters) => console.log("Filters applied:", filters)}
-              onReset={() => console.log("Filters reset")}
+              onApply={onApplyFilters}
+              genres={genres}
             />
           )}
         </div>

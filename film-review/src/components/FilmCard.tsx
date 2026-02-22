@@ -11,6 +11,8 @@ type Props = {
   film: Film;
 };
 
+const DEBUG = true;
+
 const FilmCard: React.FC<Props> = ({ film }) => {
   const [average, setAverage] = useState<Point[]>([]);
   const [isNew, setIsNew] = useState(false);
@@ -50,6 +52,20 @@ const FilmCard: React.FC<Props> = ({ film }) => {
         data={average}
       />
       {isNew && <div className="new-badge">New</div>}
+
+      {DEBUG && <div className="debug-overlay">
+      <div><strong>Title:</strong> {film.title}</div>
+      <div><strong>Year:</strong> {film.year}</div>
+      <div><strong>ID:</strong> {film.id}</div>
+      <div><strong>Runtime:</strong> {film.runtime} min</div>
+
+      {film.genres?.length && (
+        <div>
+          <strong>Genres:</strong>{" "}
+          {film.genres.map(g => g.name).join(", ")}
+        </div>
+      )}
+    </div>}
 
     </Link>
   );

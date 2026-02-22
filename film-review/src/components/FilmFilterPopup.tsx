@@ -1,27 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/FilmFilterPopup.css";
+import { Genre } from "../types/FilmTypes";
+import { MultiSelect } from "./MultiSelect";
+import { InlineSelect } from "./InlineSelect";
 
 interface FilmFilterPopupProps {
-  onApply: (filters: { fromYear?: number; toYear?: number; genre?: string; sortBy?: string }) => void;
-  onReset?: () => void;
+  onApply: (filters: {
+    fromYear?: number;
+    toYear?: number;
+    selectedGenres: Genre[];
+    sortBy: string;
+  }) => void;
+  genres: Genre[];
 }
 
-const FilmFilterPopup: React.FC<FilmFilterPopupProps> = ({ onApply, onReset }) => {
+const FilmFilterPopup: React.FC<FilmFilterPopupProps> = ({
+  onApply,
+  genres,
+}) => {
   const [fromYear, setFromYear] = useState<number | undefined>();
   const [toYear, setToYear] = useState<number | undefined>();
-  const [genre, setGenre] = useState<string>("");
+  const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
   const [sortBy, setSortBy] = useState<string>("latest");
 
-  const handleApply = () => {
-    onApply({ fromYear, toYear, genre, sortBy });
-  };
+  useEffect(() => {
+    onApply({ fromYear, toYear, selectedGenres, sortBy });
+  }, [fromYear, toYear, selectedGenres, sortBy, onApply]);
 
   const handleReset = () => {
     setFromYear(undefined);
     setToYear(undefined);
-    setGenre("");
+    setSelectedGenres([]);
     setSortBy("latest");
-    onReset?.();
   };
 
   return (
@@ -33,44 +43,53 @@ const FilmFilterPopup: React.FC<FilmFilterPopupProps> = ({ onApply, onReset }) =
             type="number"
             placeholder="From"
             value={fromYear ?? ""}
-            onChange={(e) => setFromYear(e.target.value ? Number(e.target.value) : undefined)}
+            onChange={(e) =>
+              setFromYear(e.target.value ? Number(e.target.value) : undefined)
+            }
           />
           <span className="range-sep">–</span>
           <input
             type="number"
             placeholder="To"
             value={toYear ?? ""}
-            onChange={(e) => setToYear(e.target.value ? Number(e.target.value) : undefined)}
+            onChange={(e) =>
+              setToYear(e.target.value ? Number(e.target.value) : undefined)
+            }
           />
         </div>
       </div>
 
       <div className="filter-group">
         <label>Genre</label>
-        <select value={genre} onChange={(e) => setGenre(e.target.value)}>
-          <option value="">All</option>
-          <option value="Action">Action</option>
-          <option value="Drama">Drama</option>
-          <option value="Comedy">Comedy</option>
-          <option value="Sci-Fi">Sci-Fi</option>
-          <option value="Thriller">Thriller</option>
-          <option value="Romance">Romance</option>
-        </select>
+        <MultiSelect
+          options={genres}
+          value={selectedGenres}
+          onChange={setSelectedGenres}
+          getLabel={(g) => g.name}
+          getKey={(g) => g.id}
+          placeholder="All genres"
+        />
       </div>
 
+      {/* Sort */}
       <div className="filter-group">
         <label>Sort By</label>
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="latest">Latest</option>
-          <option value="oldest">Oldest</option>
-          <option value="titleAsc">Title (A–Z)</option>
-          <option value="titleDesc">Title (Z–A)</option>
-        </select>
+        <InlineSelect
+          value={sortBy}
+          onChange={setSortBy}
+          options={[
+            { value: "latest", label: "Latest" },
+            { value: "oldest", label: "Oldest" },
+            { value: "titleAsc", label: "Title (A–Z)" },
+            { value: "titleDesc", label: "Title (Z–A)" },
+          ]}
+        />
       </div>
 
       <div className="filter-actions">
-        <button className="reset-btn" onClick={handleReset}>Reset</button>
-        <button className="apply-btn" onClick={handleApply}>Apply</button>
+        <button className="reset-btn" onClick={handleReset}>
+          Reset
+        </button>
       </div>
     </div>
   );

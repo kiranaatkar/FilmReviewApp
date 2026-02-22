@@ -1,136 +1,56 @@
-.film-filter-popup {
-  background: #1a1a1a;
-  color: #f5f5f5;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
-  transition: all 0.3s ease;
-  animation: slideUp 0.3s ease;
-}
+/* -------- Radix Select -------- */
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.filter-title {
-  text-align: center;
-  font-size: 1.3rem;
-  margin-bottom: 10px;
-  color: #ff3333;
-  font-weight: 600;
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.filter-group label {
-  font-size: 0.9rem;
-  color: #ccc;
-}
-
-.year-range {
+.radix-select-trigger {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.year-range input {
-  flex: 1;
-  padding: 8px;
+  justify-content: space-between;
+  padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid #444;
   background: #121212;
   color: #fff;
-  outline: none;
-  transition: border 0.2s ease;
-}
-
-.year-range input:focus {
-  border-color: #ff3333;
-}
-
-.range-sep {
-  color: #777;
-  font-size: 1rem;
-}
-
-select {
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #444;
-  background: #121212;
-  color: #fff;
-  outline: none;
   cursor: pointer;
   transition: border 0.2s ease;
 }
 
-select:focus {
+.radix-select-trigger:hover,
+.radix-select-trigger:focus-visible {
   border-color: #ff3333;
 }
 
-.filter-actions {
+.radix-select-icon {
+  color: #aaa;
+}
+
+/* Dropdown */
+.radix-select-content {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.radix-select-item {
+  padding: 10px 12px;
+  color: #eee;
+  cursor: pointer;
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 10px;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.15s ease;
 }
 
-.apply-btn,
-.reset-btn {
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
+.radix-select-item:hover {
+  background: #262626;
 }
 
-.apply-btn {
-  background: #ff3333;
-  color: white;
-  border: none;
+.radix-select-item[data-state="checked"] {
+  background: #2d2d2d;
+  color: #ff3333;
 }
 
-.apply-btn:hover {
-  background: #ff4d4d;
-  transform: translateY(-2px);
-}
-
-.reset-btn {
-  background: transparent;
-  border: 1px solid #555;
-  color: #ccc;
-}
-
-.reset-btn:hover {
-  border-color: #ff3333;
-  color: #fff;
-  transform: translateY(-2px);
-}
-
-@media (max-width: 480px) {
-  .film-filter-popup {
-    padding: 15px;
-    gap: 12px;
-  }
-  .filter-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
+.radix-select-check {
+  color: #ff3333;
 }
