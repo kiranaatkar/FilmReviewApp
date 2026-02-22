@@ -39,7 +39,7 @@ export function MultiSelect<T>({
     <div className="multi-container">
       <button className="multi-trigger" onClick={() => setOpen(!open)}>
         {displayText}
-        <ChevronDown size={16} />
+        <ChevronDown className="select-chevron-icon" />
       </button>
 
       {open && (

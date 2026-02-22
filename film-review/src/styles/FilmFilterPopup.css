@@ -54,3 +54,32 @@
 .radix-select-check {
   color: #ff3333;
 }
+
+.select-check-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;   /* prevents stretching */
+}
+
+.radix-select-item {
+  position: relative;
+  padding-right: 28px;
+}
+
+.select-check-icon, .select-chevron-icon{
+  position: absolute;
+  right: 10px;
+  width: 24px;
+}
+
+.inline-select {
+  width: 100%;
+}
+
+.radix-select-trigger {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

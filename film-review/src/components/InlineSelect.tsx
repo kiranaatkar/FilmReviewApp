@@ -21,7 +21,7 @@ export function InlineSelect({
     <div className="inline-select">
       <button className="radix-select-trigger" onClick={() => setOpen(!open)}>
         {selected?.label ?? placeholder}
-        <ChevronDown size={16} />
+        <ChevronDown className="select-chevron-icon" />
       </button>
 
       {open && (
@@ -38,7 +38,7 @@ export function InlineSelect({
               }}
             >
               {opt.label}
-              {value === opt.value && <Check size={1} />}
+              {value === opt.value && <Check className="select-check-icon" />}
             </div>
           ))}
         </div>

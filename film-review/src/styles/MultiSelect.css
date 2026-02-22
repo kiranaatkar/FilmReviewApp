@@ -15,11 +15,6 @@
   border-color: #ff3333;
 }
 
-/* Chevron */
-.multi-trigger svg {
-    width: 10%;
-}
-
 .multi-content {
   background: #1a1a1a;
   border-radius: 12px;
