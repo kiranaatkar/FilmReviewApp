@@ -9,6 +9,7 @@ import { useGraphFilterStore } from "../store/useGraphFilterStore";
 import "../styles/FilmPage.css";
 
 const FilmPage: React.FC = () => {
+  const [loading, setLoading] = useState(true);
   const { titleParam } = useParams<{ titleParam: string }>();
   const [points, setUserRating] = useState<Point[]>([]);
   const [average, setAverageRating] = useState<Point[]>([]);
@@ -20,35 +21,39 @@ const FilmPage: React.FC = () => {
 
   // Fetch film + ratings
   useEffect(() => {
-    if (!titleParam || !user) return;
+  if (!titleParam || !user?.id) return;
 
-    (async () => {
-      try {
-        const filmData = await FilmService.getFilm(titleParam);
-        setFilm(filmData);
+  (async () => {
+    try {
+      setLoading(true);
 
-        const [avg, rating, filmPeakRating] = await Promise.all([
-          FilmService.getAverageRating(filmData.id),
-          FilmService.getUserRating(filmData.id, user.id),
-          FilmService.getUserRating(filmData.id, 1), // temp hack for film peak (userId 1 is admin)
-        ]);
+      const filmData = await FilmService.getFilm(titleParam);
+      setFilm(filmData);
 
-        // create clones to avoid mutating state
-        setFilmPeakRating(filmPeakRating.points.map(p => ({ ...p })));
-        setAverageRating(avg.map(p => ({ ...p })));
-        setUserRating(rating.points.map(p => ({ ...p })));
-      } catch (err: any) {
-        setError(err.message ?? "Failed to fetch film data");
-      }
-    })();
-  }, [titleParam, user]);
+      const [avg, rating, peak] = await Promise.all([
+        FilmService.getAverageRating(filmData.id),
+        FilmService.getUserRating(filmData.id, user.id),
+        FilmService.getUserRating(filmData.id, 1), // TODO replace
+      ]);
+
+      // create clones to avoid mutating state
+      setFilmPeakRating(peak.points.map(p => ({ ...p })));
+      setAverageRating(avg.map(p => ({ ...p })));
+      setUserRating(rating.points.map(p => ({ ...p })));
+    } catch (err: any) {
+      setError(err.message ?? "Failed to fetch film data");
+    } finally {
+      setLoading(false);
+    }
+  })();
+}, [titleParam, user?.id]);
 
   // Memoize the arrays so they don’t break Graph’s dependency list
   const memoizedFilmPeakPoints = useMemo(() => filmPeakPoints, [filmPeakPoints]);
   const memoizedAverage = useMemo(() => average, [average]);
   const memoizedPoints = useMemo(() => points, [points]);
 
-  const OnSubmit = async () => {
+  const HandleSubmit = async () => {
     if (!film || !user) return;
     const rating: Rating = { userId: user.id, filmId: film.id, points };
 
@@ -60,11 +65,17 @@ const FilmPage: React.FC = () => {
     }
   };
 
-  const OnEdit = () => console.log("Edit review clicked");
+  const HandleEdit = () => console.log("Edit review clicked");
+
+  if (loading) return <p>Loading film…</p>;
+  if (error) return <p className="error">{error}</p>;
+  if (!film) return null;
 
   return (
     <div className="film-page">
-      {film && points.length > 0 ? (
+      {loading ? (
+        <p>Loading film…</p>
+      ) : film && points.length > 0 ? (
         <>
           <h2>
             <span className="film-title">{film.title}</span>{" "}
@@ -83,10 +94,10 @@ const FilmPage: React.FC = () => {
           />
 
           <div className="review-control-buttons">
-            <button className="edit-button" onClick={OnEdit}>
+            <button className="edit-button" onClick={HandleEdit}>
               Edit Review
             </button>
-            <button className="submit-button" onClick={OnSubmit}>
+            <button className="submit-button" onClick={HandleSubmit}>
               Submit Review
             </button>
           </div>

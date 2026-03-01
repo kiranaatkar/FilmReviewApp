@@ -63,20 +63,6 @@ class FilmService {
           throw new Error("Failed to fetch film titles. Please try again.");
         default:
           throw new Error("An unexpected error occurred.");
-        // return [
-        //   {
-        //     id: 1,
-        //     title: "LEG",
-        //     year: 2025,
-        //     poster_url: "/assets/lighthouse.png",
-        //   },
-        //   {
-        //     id: 2,
-        //     title: "Matrix",
-        //     year: 1999,
-        //     poster_url: "/assets/matrix.png",
-        //   },
-        // ];
       }
     }
   }
@@ -95,12 +81,6 @@ class FilmService {
         default:
           throw new Error("An unexpected error occurred.");
       }
-      // return {
-      //   id: 1,
-      //   title: "LEG",
-      //   year: 2025,
-      //   poster_url: "/assets/lighthouse.png",
-      // };
     }
   }
 
@@ -144,7 +124,6 @@ class FilmService {
           );
           throw new Error("An unexpected error occurred.");
       }
-      //return { userId: 1, filmId: 1, points: [] };
     }
   }
 
