@@ -10,6 +10,8 @@ import "../styles/FilmPage.css";
 
 const FilmPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const { titleParam } = useParams<{ titleParam: string }>();
   const [points, setUserRating] = useState<Point[]>([]);
   const [average, setAverageRating] = useState<Point[]>([]);
@@ -55,17 +57,44 @@ const FilmPage: React.FC = () => {
 
   const HandleSubmit = async () => {
     if (!film || !user) return;
+
+    setIsSaving(true);
     const rating: Rating = { userId: user.id, filmId: film.id, points };
+
+    // Optimistically update average, then fetch true average
+    const previousAverage = average;
+    const optimisticAverage = computeOptimisticAverage(average, points);
+    setAverageRating(optimisticAverage);
 
     try {
       await FilmService.postRating(rating);
-      setAverageRating(await FilmService.getAverageRating(film.id));
+      const avg = await FilmService.getAverageRating(film.id);
+      setAverageRating(avg.map(p => ({ ...p })));
+
     } catch (err: any) {
+      setAverageRating(previousAverage);
       setError(err.message);
+    }
+    finally {
+      setIsSaving(false);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     }
   };
 
   const HandleEdit = () => console.log("Edit review clicked");
+
+  function computeOptimisticAverage(
+    currentAverage: Point[],
+    userPoints: Point[]
+    ): Point[] {
+      if (!currentAverage.length) return userPoints;
+
+      return currentAverage.map((avgPoint, i) => ({
+        ...avgPoint,
+        y: (avgPoint.y + userPoints[i].y) / 2,
+      }));
+  }
 
   if (loading) return <p>Loading film…</p>;
   if (error) return <p className="error">{error}</p>;
@@ -97,8 +126,11 @@ const FilmPage: React.FC = () => {
             <button className="edit-button" onClick={HandleEdit}>
               Edit Review
             </button>
-            <button className="submit-button" onClick={HandleSubmit}>
-              Submit Review
+            <button 
+              className="submit-button" 
+              onClick={HandleSubmit}
+              disabled={isSaving}>
+              {isSaving ? "Saving..." : "Submit Review"}
             </button>
           </div>
 
@@ -130,6 +162,11 @@ const FilmPage: React.FC = () => {
         </>
       ) : (
         <div>{error && <p className="error">{error}</p>}</div>
+      )}
+      {showToast && (
+        <div className="toast">
+          Review saved
+        </div>
       )}
     </div>
   );
