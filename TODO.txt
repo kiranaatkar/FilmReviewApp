@@ -1,10 +1,50 @@
-NEXT TASK:
-FilmPage:
-Add loading skeleton UI with react-loading-skeleton
-Refactor FilmService into hooks
-Improve Graph performance
+1. Authentication & User Flow
 
-Tasks:
-tidy up api calls on home page. implement intersection observer and pagination.
+    As a user, I can sign up with valid credentials.
+    As a user, I can log in with valid credentials.
+    As a user, I cannot log in with invalid credentials and see an error.
+    As a user, I am redirected to /login if I am not authenticated.
+    As a user, I can view my profile page after logging in.
+    As a user, I can log out and get redirected to the login page.
 
-Bugs:
+2. Onboarding
+
+    As a new user, I can complete onboarding after sign-up.
+    As a user, I cannot skip required onboarding steps (if you enforce them).
+    As a returning user, I am not shown onboarding again.
+
+3. Home / Film Listing
+
+    As a user, I can see a list of films on the home page.
+    As a user, I can see a “New” badge on films added within the last 7 days.
+    As a user, I can search films using the search bar in the footer.
+    As a user, I can filter films by genre and see the filtered results immediately.
+    As a user, I can sort films (latest, oldest, title A–Z, title Z–A) and see the updated list instantly.
+    As a user, I see a message if no films are found.
+
+4. Film Page
+
+    As a user, I can click on a film and go to its detail page.
+    As a user, I can see film details: title, year, runtime, genres, directors, actors.
+    As a user, I can drag points on my graph to submit ratings.
+    As a user, I see average ratings update optimistically as I adjust my points.
+    As a user, I can submit my review and see a “saved” toast.
+    As a user, the submit button is disabled while saving.
+    As a user, I can toggle layers (Film Peak, Audience, You) in the graph.
+    As a user, peak triangles and lines update smoothly with transitions.
+    As a user, I can edit my review (if you have this feature).
+
+5. Performance / UX
+
+    As a user, I can scroll the home page smoothly even with many films.
+    As a user, the graphs render quickly and are responsive.
+    As a user, filters update immediately without needing an Apply button.
+    As a user, the sort and genre dropdowns expand correctly and push content down.
+    As a user, loading skeletons appear while data is fetching (if implemented).
+
+6. Edge Cases
+
+    As a user, I see graceful error messages if a fetch fails.
+    As a user, the app handles empty film lists or missing data.
+    As a user, the app handles network slowdowns gracefully.
+    As a user, invalid input (like negative years in filters) does not crash the app.
