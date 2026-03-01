@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Point, Rating } from "../types/GraphTypes";
 import { Film } from "../types/FilmTypes";
@@ -9,92 +9,69 @@ import { useGraphFilterStore } from "../store/useGraphFilterStore";
 import "../styles/FilmPage.css";
 
 const FilmPage: React.FC = () => {
+  const { titleParam } = useParams<{ titleParam: string }>();
+  const { user } = useAuth();
+
+  const filmPeak = useGraphFilterStore(s => s.filmPeak);
+  const audience = useGraphFilterStore(s => s.audience);
+  const you = useGraphFilterStore(s => s.you);
+
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const { titleParam } = useParams<{ titleParam: string }>();
+
+  const [film, setFilm] = useState<Film>();
   const [points, setUserRating] = useState<Point[]>([]);
   const [average, setAverageRating] = useState<Point[]>([]);
   const [filmPeakPoints, setFilmPeakRating] = useState<Point[]>([]);
-  const [film, setFilm] = useState<Film>();
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
-  const { filmPeak, audience, you } = useGraphFilterStore();
 
   // Fetch film + ratings
   useEffect(() => {
-  if (!titleParam || !user?.id) return;
+    if (!titleParam || !user?.id) return;
 
-  (async () => {
-    try {
-      setLoading(true);
+    (async () => {
+      try {
+        setLoading(true);
 
-      const filmData = await FilmService.getFilm(titleParam);
-      setFilm(filmData);
+        const filmData = await FilmService.getFilm(titleParam);
+        setFilm(filmData);
 
-      const [avg, rating, peak] = await Promise.all([
-        FilmService.getAverageRating(filmData.id),
-        FilmService.getUserRating(filmData.id, user.id),
-        FilmService.getUserRating(filmData.id, 1), // TODO replace
-      ]);
+        const [avg, rating, peak] = await Promise.all([
+          FilmService.getAverageRating(filmData.id),
+          FilmService.getUserRating(filmData.id, user.id),
+          FilmService.getUserRating(filmData.id, 1), // TODO replace
+        ]);
 
-      // create clones to avoid mutating state
-      setFilmPeakRating(peak.points.map(p => ({ ...p })));
-      setAverageRating(avg.map(p => ({ ...p })));
-      setUserRating(rating.points.map(p => ({ ...p })));
-    } catch (err: any) {
-      setError(err.message ?? "Failed to fetch film data");
-    } finally {
-      setLoading(false);
-    }
-  })();
-}, [titleParam, user?.id]);
+        setFilmPeakRating(peak.points);
+        setAverageRating(avg);
+        setUserRating(rating.points);
+      } catch (err: any) {
+        setError(err.message ?? "Failed to fetch film data");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [titleParam, user?.id]);
 
-  // Memoize the arrays so they don’t break Graph’s dependency list
-  const memoizedFilmPeakPoints = useMemo(() => filmPeakPoints, [filmPeakPoints]);
-  const memoizedAverage = useMemo(() => average, [average]);
-  const memoizedPoints = useMemo(() => points, [points]);
-
-  const HandleSubmit = async () => {
+  const handleSubmit = async () => {
     if (!film || !user) return;
 
     setIsSaving(true);
     const rating: Rating = { userId: user.id, filmId: film.id, points };
 
-    // Optimistically update average, then fetch true average
-    const previousAverage = average;
-    const optimisticAverage = computeOptimisticAverage(average, points);
-    setAverageRating(optimisticAverage);
-
     try {
       await FilmService.postRating(rating);
       const avg = await FilmService.getAverageRating(film.id);
-      setAverageRating(avg.map(p => ({ ...p })));
-
+      setAverageRating(avg);
     } catch (err: any) {
-      setAverageRating(previousAverage);
       setError(err.message);
-    }
-    finally {
+    } finally {
       setIsSaving(false);
       setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      setTimeout(() => setShowToast(false), 2500);
     }
   };
-
-  const HandleEdit = () => console.log("Edit review clicked");
-
-  function computeOptimisticAverage(
-    currentAverage: Point[],
-    userPoints: Point[]
-    ): Point[] {
-      if (!currentAverage.length) return userPoints;
-
-      return currentAverage.map((avgPoint, i) => ({
-        ...avgPoint,
-        y: (avgPoint.y + userPoints[i].y) / 2,
-      }));
-  }
 
   if (loading) return <p>Loading film…</p>;
   if (error) return <p className="error">{error}</p>;
@@ -102,39 +79,35 @@ const FilmPage: React.FC = () => {
 
   return (
     <div className="film-page">
-      {loading ? (
-        <p>Loading film…</p>
-      ) : film && points.length > 0 ? (
-        <>
-          <h2>
-            <span className="film-title">{film.title}</span>{" "}
-            <span className="film-year">({film.year})</span>
-          </h2>
+      <h2>
+        <span className="film-title">{film.title}</span>{" "}
+        <span className="film-year">({film.year})</span>
+      </h2>
 
-          <Graph
-            key={film.id}
-            posterUrl={film.posterUrl}
-            filmPeakPoints={memoizedFilmPeakPoints}
-            data={memoizedPoints}
-            audienceData={memoizedAverage}
-            showFilmPeak={filmPeak}
-            showAudience={audience}
-            showYou={you}
-          />
+      <Graph
+        posterUrl={film.posterUrl}
+        filmPeakPoints={filmPeakPoints}
+        data={points}
+        audienceData={average}
+        showFilmPeak={filmPeak}
+        showAudience={audience}
+        showYou={you}
+        onUserChange={setUserRating}
+      />
 
-          <div className="review-control-buttons">
-            <button className="edit-button" onClick={HandleEdit}>
-              Edit Review
-            </button>
-            <button 
-              className="submit-button" 
-              onClick={HandleSubmit}
-              disabled={isSaving}>
-              {isSaving ? "Saving..." : "Submit Review"}
-            </button>
-          </div>
+      <div className="review-control-buttons">
+        <button className="edit-button">Edit Review</button>
 
-          <div className="film-information">
+        <button
+          className="submit-button"
+          onClick={handleSubmit}
+          disabled={isSaving}
+        >
+          {isSaving ? "Saving..." : "Submit Review"}
+        </button>
+      </div>
+
+      <div className="film-information">
             <p><strong>Runtime:</strong> {film.runtime} min</p>
 
             <p>
@@ -159,15 +132,7 @@ const FilmPage: React.FC = () => {
             </p>
           </div>
 
-        </>
-      ) : (
-        <div>{error && <p className="error">{error}</p>}</div>
-      )}
-      {showToast && (
-        <div className="toast">
-          Review saved
-        </div>
-      )}
+      {showToast && <div className="toast">Review saved</div>}
     </div>
   );
 };

@@ -14,6 +14,7 @@ type Props = {
   showFilmPeak: boolean;
   showAudience: boolean;
   showYou: boolean;
+  onUserChange?: (points: Point[]) => void; // emit after drag
 };
 
 const Graph: React.FC<Props> = ({
@@ -24,30 +25,46 @@ const Graph: React.FC<Props> = ({
   showFilmPeak,
   showAudience,
   showYou,
+  onUserChange,
 }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const lineRef = useRef(
+    d3.line<Point>()
+      .x(d => d.x)
+      .y(d => d.y)
+      .curve(d3.curveMonotoneX)
+  );
 
-  // --- STATIC LAYERS (run once when posterUrl changes)
+  // RAF throttling
+  const rafId = useRef<number | null>(null);
+
+  const scheduleUpdate = (updateFn: () => void) => {
+    if (rafId.current) return;
+    rafId.current = requestAnimationFrame(() => {
+      updateFn();
+      rafId.current = null;
+    });
+  };
+
+  // --- STATIC LAYERS (runs once)
   useEffect(() => {
     if (!svgRef.current) return;
     const svg = d3.select(svgRef.current);
-    svg.selectAll("*").remove(); // initial clean
 
-    // Create named groups for layers
+    svg.selectAll("*").remove();
+
     svg.append("g").attr("class", "background-layer");
     svg.append("g").attr("class", "grid-layer");
     svg.append("g").attr("class", "film-layer");
     svg.append("g").attr("class", "audience-layer");
     svg.append("g").attr("class", "user-layer");
+    svg.append("g").attr("class", "peak-layer");
 
-    // Draw background and grid into their groups
     addBackground(svg.select(".background-layer"), posterUrl, config);
     addGridLinesAndLabels(svg.select(".grid-layer"), config);
 
-    // Gradient in defs
     const defs = svg.append("defs");
-    const gradient = defs
-      .append("linearGradient")
+    const gradient = defs.append("linearGradient")
       .attr("id", "triangle-gradient")
       .attr("x1", "0%")
       .attr("y1", "100%")
@@ -57,130 +74,141 @@ const Graph: React.FC<Props> = ({
     gradient.append("stop").attr("offset", "100%").attr("stop-color", "red");
   }, [posterUrl]);
 
-  // --- DYNAMIC LAYERS (update when data or toggles change)
+  // --- DYNAMIC LAYERS
   useEffect(() => {
     if (!svgRef.current) return;
     const svg = d3.select(svgRef.current);
 
-    const filmLayer = svg.select<SVGGElement>(".film-layer");
-    const audienceLayer = svg.select<SVGGElement>(".audience-layer");
-    const userLayer = svg.select<SVGGElement>(".user-layer");
+    const filmLayer = svg.select(".film-layer");
+    const audienceLayer = svg.select(".audience-layer");
+    const userLayer = svg.select(".user-layer");
+    const peakLayer = svg.select(".peak-layer");
 
-    // Clear only the dynamic layers
-    filmLayer.selectAll("*").remove();
-    audienceLayer.selectAll("*").remove();
-    userLayer.selectAll("*").remove();
-    svg.selectAll(".peak-triangle").remove();
+    const line = lineRef.current;
 
-    // Helper to create a line generator
-    const makeLine = () =>
-      d3.line<Point>().x((d) => d.x).y((d) => d.y).curve(d3.curveMonotoneX);
+    // Film Peak Layer
+    filmLayer
+      .selectAll<SVGPathElement, Point[]>("path")
+      .data(showFilmPeak && filmPeakPoints.length ? [filmPeakPoints] : [])
+      .join(
+        enter => enter.append("path")
+          .attr("fill", "none")
+          .attr("stroke", "red")
+          .attr("stroke-width", 8)
+          .attr("opacity", 0.3),
+        update => update,
+        exit => exit.remove()
+      )
+      .transition()
+      .duration(300)
+      .attr("d", line);
 
-    // --- Film Peak Layer
-    if (showFilmPeak && filmPeakPoints.length > 0) {
-      const line = makeLine();
-      filmLayer
-        .append("path")
-        .attr("d", line(filmPeakPoints) || "")
-        .attr("fill", "none")
-        .attr("stroke", "red")
-        .attr("stroke-width", 8)
-        .attr("opacity", 0.3);
+    filmLayer
+      .selectAll<SVGCircleElement, Point>("circle")
+      .data(showFilmPeak ? filmPeakPoints : [])
+      .join("circle")
+      .attr("r", 8)
+      .attr("fill", "red")
+      .attr("opacity", 0.3)
+      .attr("pointer-events", "none")
+      .transition()
+      .duration(300)
+      .attr("cx", d => d.x)
+      .attr("cy", d => d.y);
 
-      filmLayer
-        .selectAll<SVGCircleElement, Point>("circle")
-        .data(filmPeakPoints)
-        .join("circle")
-        .attr("r", 8)
-        .attr("fill", "red")
-        .attr("opacity", 0.3)
-        .attr("cx", (d) => d.x)
-        .attr("cy", (d) => d.y)
-        .attr("pointer-events", "none");
-    }
+    // ===============================
+    // 👥 Audience Layer (D3 join)
+    // ===============================
+    audienceLayer
+      .selectAll<SVGPathElement, Point[]>("path")
+      .data(showAudience && audienceData.length ? [audienceData] : [])
+      .join(
+        enter => enter.append("path")
+          .attr("fill", "none")
+          .attr("stroke", "#0079DD")
+          .attr("stroke-width", 8)
+          .attr("opacity", 0.3),
+        update => update,
+        exit => exit.remove()
+      )
+      .transition()
+      .duration(300)
+      .attr("d", line);
 
-    // --- Audience Layer
-    if (showAudience && audienceData.length > 0) {
-      const line = makeLine();
-      audienceLayer
-        .append("path")
-        .attr("d", line(audienceData) || "")
-        .attr("fill", "none")
-        .attr("stroke", "#0079DD")
-        .attr("stroke-width", 8)
-        .attr("opacity", 0.3);
+    audienceLayer
+      .selectAll<SVGCircleElement, Point>("circle")
+      .data(showAudience ? audienceData : [])
+      .join("circle")
+      .attr("r", 8)
+      .attr("fill", "#0079DD")
+      .attr("opacity", 0.3)
+      .attr("pointer-events", "none")
+      .transition()
+      .duration(300)
+      .attr("cx", d => d.x)
+      .attr("cy", d => d.y);
 
-      audienceLayer
-        .selectAll<SVGCircleElement, Point>("circle")
-        .data(audienceData)
-        .join("circle")
-        .attr("r", 8)
-        .attr("fill", "#0079DD")
-        .attr("opacity", 0.3)
-        .attr("cx", (d) => d.x)
-        .attr("cy", (d) => d.y)
-        .attr("pointer-events", "none");
-    }
-
-    // --- User (draggable) Layer
-    if (showYou && data.length > 0) {
-      const line = makeLine();
-
-      // Add the user path
+    // User Layer (Draggable)
+    if (showYou && data.length) {
+      // Path join
       userLayer
-        .append("path")
+        .selectAll<SVGPathElement, Point[]>("path")
+        .data([data])
+        .join("path")
         .attr("class", "user-path")
-        .attr("d", line(data) || "")
         .attr("fill", "none")
         .attr("stroke", "#0D6901")
-        .attr("stroke-width", 8);
+        .attr("stroke-width", 8)
+        .transition()
+        .duration(150)
+        .attr("d", line);
 
-      // updateLines updates the path and the peak triangle
-      const updateLines = () => {
-        const pathData = line(data);
-        userLayer.selectAll<SVGPathElement, Point>(".user-path").attr("d", pathData || "");
-
-        // compute peak
+      const updatePeak = () => {
         const peak = data.reduce((prev, curr) => (curr.y < prev.y ? curr : prev), data[0]);
-        svg.selectAll(".peak-triangle").remove();
-        svg
-          .append("polygon")
-          .attr("class", "peak-triangle")
-          .attr(
-            "points",
-            `${peak.x},${peak.y - 25} ${peak.x - 10},${peak.y - 10} ${peak.x + 10},${peak.y - 10}`
-          )
+
+        peakLayer
+          .selectAll<SVGPolygonElement, Point>("polygon")
+          .data([peak])
+          .join("polygon")
           .attr("fill", "url(#triangle-gradient)")
-          .attr("stroke", "none")
-          .attr("pointer-events", "none");
+          .attr("pointer-events", "none")
+          .transition()
+          .duration(150)
+          .attr("points", `${peak.x},${peak.y - 25} ${peak.x - 10},${peak.y - 10} ${peak.x + 10},${peak.y - 10}`);
       };
 
-      // Create drag behavior with correct generic types
-      const dragBehavior = d3
-        .drag<SVGCircleElement, Point>()
-        .on(
-          "drag",
-          function (
-            this: SVGCircleElement,
-            event: d3.D3DragEvent<SVGCircleElement, Point, unknown>,
-            draggedPoint: Point
-          ) {
-            const idx = data.indexOf(draggedPoint);
-            if (idx > 0 && idx < data.length - 1) {
-              draggedPoint.x = Math.max(
-                data[idx - 1].x + config.pointPadding,
-                Math.min(data[idx + 1].x - config.pointPadding, event.x)
-              );
-            }
-            draggedPoint.y = Math.max(config.verticalGridPadding, Math.min(config.graphHeight, event.y));
+      const updateLines = () => {
+        userLayer.select<SVGPathElement>(".user-path").attr("d", line(data) || "");
+        updatePeak();
+      };
 
-            // Update element position
-            d3.select(this).attr("cx", draggedPoint.x).attr("cy", draggedPoint.y);
-            updateLines();
+      const dragBehavior = d3.drag<SVGCircleElement, Point>()
+        .on("drag", function (event, draggedPoint) {
+          const idx = data.indexOf(draggedPoint);
+
+          if (idx > 0 && idx < data.length - 1) {
+            draggedPoint.x = Math.max(
+              data[idx - 1].x + config.pointPadding,
+              Math.min(data[idx + 1].x - config.pointPadding, event.x)
+            );
           }
-        );
 
-      // Join circles and attach drag — to satisfy TypeScript, attach per element via .each and cast the .call to any
+          draggedPoint.y = Math.max(
+            config.verticalGridPadding,
+            Math.min(config.graphHeight, event.y)
+          );
+
+          d3.select(this)
+            .attr("cx", draggedPoint.x)
+            .attr("cy", draggedPoint.y);
+
+          scheduleUpdate(updateLines);
+        })
+        .on("end", () => {
+          onUserChange?.([...data]); // emit once after drag
+        });
+
+      // Circle join
       userLayer
         .selectAll<SVGCircleElement, Point>("circle")
         .data(data)
@@ -188,17 +216,18 @@ const Graph: React.FC<Props> = ({
         .attr("class", "draggable-point")
         .attr("r", 8)
         .attr("fill", "#0D6901")
-        .attr("cx", (d) => d.x)
-        .attr("cy", (d) => d.y)
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y)
         .each(function () {
-          // `this` is an element for which we attach the drag behavior
-          // cast dragBehavior to any only at call-site to satisfy TS defs for Selection.call(...)
           d3.select(this).call(dragBehavior as any);
         });
 
-      updateLines();
+      updatePeak();
+    } else {
+      userLayer.selectAll("*").remove();
+      peakLayer.selectAll("*").remove();
     }
-  }, [filmPeakPoints, audienceData, data, showFilmPeak, showAudience, showYou]);
+  }, [filmPeakPoints, audienceData, data, showFilmPeak, showAudience, showYou, onUserChange]);
 
   return (
     <div className="graph-wrapper">
@@ -211,4 +240,4 @@ const Graph: React.FC<Props> = ({
   );
 };
 
-export default Graph;
+export default React.memo(Graph);

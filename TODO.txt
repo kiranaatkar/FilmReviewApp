@@ -1,5 +1,8 @@
 NEXT TASK:
-when you deselect you from graph filter, the peak triangle remains
+FilmPage:
+Add loading skeleton UI with react-loading-skeleton
+Refactor FilmService into hooks
+Improve Graph performance
 
 Tasks:
 tidy up api calls on home page. implement intersection observer and pagination.
