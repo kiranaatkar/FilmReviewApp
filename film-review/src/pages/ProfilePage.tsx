@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Profile.css";
@@ -7,15 +7,18 @@ const ProfilePage: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!user) {
+      navigate("/login", { replace: true });
+    }
+  }, [user, navigate]);
+
   const handleLogout = () => {
-    logout(); // Clear auth state
-    navigate("/login"); // Redirect to login page
+    logout();
+    navigate("/login", { replace: true });
   };
 
-  if (!user) {
-    navigate("/login");
-    return null;
-  }
+  if (!user) return null;
 
   return (
     <div className="profile-page">
