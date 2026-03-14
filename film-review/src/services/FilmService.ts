@@ -8,11 +8,13 @@ import { TokenResponse } from "../types/AuthTypes";
 class FilmService {
   static async SignUp(
     username: string,
+    email: string,
     password: string
   ): Promise<TokenResponse | string> {
     try {
       const response = await client.post("/users/create", {
         username,
+        email,
         password,
       });
       return response.data;
