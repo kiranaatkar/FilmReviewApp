@@ -32,17 +32,18 @@ class FilmService {
   }
 
   static async SignIn(
-    username: string,
+    identifier: string,
     password: string
   ): Promise<TokenResponse | string> {
     try {
-      const response = await client.post("/users/signIn", {
-        username,
+      const res = await client.post("/users/signIn", {
+        identifier,
         password,
       });
-      return response.data;
+
+      return res.data;
     } catch (error: any) {
-      console.error(`Error logging in user ${username}:`, error);
+      console.error(`Error logging in user ${identifier}:`, error);
       switch (error.response.status) {
         case StatusCodes.BAD_REQUEST:
           throw new Error("Invalid rating.");

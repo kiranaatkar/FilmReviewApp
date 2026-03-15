@@ -7,7 +7,7 @@ import "../styles/Login.css";
 import { Link } from "react-router-dom";
 
 const LoginPage: React.FC = () => {
-  const [username, setUsername] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
 
   const [message, setMessage] = useState("");
@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
       setIsSubmitting(true);
 
       const res: TokenResponse | string = await FilmService.SignIn(
-        username,
+        identifier,
         password
       );
 
@@ -37,9 +37,10 @@ const LoginPage: React.FC = () => {
         login(res.token);
         navigate("/home");
       } else {
-        setMessage(`❌ ${res}`);
+        setMessage(`${res}`);
       }
     } catch (error) {
+      console.error("Login error:", error);
       setMessage("Error logging in. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -54,9 +55,9 @@ const LoginPage: React.FC = () => {
         <form onSubmit={handleLogin}>
           <input
             type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username or Email"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
             required
           />
 
