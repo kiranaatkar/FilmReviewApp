@@ -6,24 +6,32 @@ import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css";
 import { Link } from "react-router-dom";
 
-
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
   const { login, user } = useAuth();
 
   useEffect(() => {
-      if (user) navigate("/home");
-    }, [user, navigate]);
+    if (user) navigate("/home");
+  }, [user, navigate]);
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
 
     try {
-      const res: TokenResponse | string = await FilmService.SignIn(username, password);
+      setIsSubmitting(true);
+
+      const res: TokenResponse | string = await FilmService.SignIn(
+        username,
+        password
+      );
 
       if (typeof res !== "string") {
         login(res.token);
@@ -32,7 +40,9 @@ const LoginPage: React.FC = () => {
         setMessage(`❌ ${res}`);
       }
     } catch (error) {
-      setMessage("❌ Error signing up. Please try again.");
+      setMessage("Error logging in. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -41,7 +51,7 @@ const LoginPage: React.FC = () => {
       <div className="login-form">
         <h2>Log In</h2>
 
-        <form onSubmit={handleSignUp}>
+        <form onSubmit={handleLogin}>
           <input
             type="text"
             placeholder="Username"
@@ -51,22 +61,31 @@ const LoginPage: React.FC = () => {
           />
 
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
 
-          <button type="submit">Log In</button>
+          <label className="show-password">
+            <input
+              type="checkbox"
+              onChange={() => setShowPassword(!showPassword)}
+            />
+            Show password
+          </label>
+
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Logging in..." : "Log In"}
+          </button>
         </form>
 
         <p className="signup-redirect">
           Don't have an account? <Link to="/sign-up">Sign up</Link>
         </p>
 
-
-        {message && <p>{message}</p>}
+        {message && <p className="login-message">{message}</p>}
       </div>
     </div>
   );
