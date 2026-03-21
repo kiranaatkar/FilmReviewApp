@@ -11,6 +11,10 @@ import FilmService from "./services/FilmService";
 import { Film, Genre } from "./types/FilmTypes";
 import "./styles/App.css";
 import OnboardingPage from "./pages/OnboardingPage";
+import {
+  DEFAULT_FILM_SORT,
+  FilmSortOption,
+} from "./config/FilmFilters";
 
 const AppContent: React.FC = () => {
   const [films, setFilms] = useState<Film[]>([]);
@@ -22,19 +26,23 @@ const AppContent: React.FC = () => {
     fromYear?: number;
     toYear?: number;
     selectedGenres: Genre[];
-    sortBy?: string;
-  }>({ selectedGenres: [] });
+    sortBy: FilmSortOption;
+  }>({
+    selectedGenres: [],
+    sortBy: DEFAULT_FILM_SORT,
+  });
 
   useEffect(() => {
     const fetchFilms = async () => {
       try {
         const films = await FilmService.getFilms();
         setFilms(films);
+
         const uniqueGenres = Array.from(
           new Map(
             films
-              .flatMap(film => film.genres)
-              .map(genre => [genre.id, genre])
+              .flatMap((film) => film.genres)
+              .map((genre) => [genre.id, genre])
           ).values()
         );
         setGenres(uniqueGenres);
@@ -42,42 +50,43 @@ const AppContent: React.FC = () => {
         console.error(err);
       }
     };
+
     fetchFilms();
   }, []);
 
   const filteredFilms = films
-  .filter((film) =>
-    film.title.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-  .filter((film) => {
-    // Year filter
-    if (filters.fromYear && film.year < filters.fromYear) return false;
-    if (filters.toYear && film.year > filters.toYear) return false;
+    .filter((film) =>
+      film.title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .filter((film) => {
+      if (filters.fromYear && film.year < filters.fromYear) return false;
+      if (filters.toYear && film.year > filters.toYear) return false;
 
-    // Genre filter
-    if (filters.selectedGenres && filters.selectedGenres.length > 0) {
-      const filmGenreIds = film.genres.map((g) => g.id);
-      const selectedIds = filters.selectedGenres.map((g) => g.id);
-      if (!selectedIds.some((id) => filmGenreIds.includes(id))) return false;
-    }
+      if (filters.selectedGenres.length > 0) {
+        const filmGenreIds = film.genres.map((g) => g.id);
+        const selectedIds = filters.selectedGenres.map((g) => g.id);
 
-    return true;
-  })
-  .sort((a, b) => {
-    switch (filters.sortBy) {
-      case "oldest":
-        return a.year - b.year;
-      case "titleAsc":
-        return a.title.localeCompare(b.title);
-      case "titleDesc":
-        return b.title.localeCompare(a.title);
-      case "latest":
-      default:
-        return b.year - a.year;
-    }
-  });
+        if (!selectedIds.some((id) => filmGenreIds.includes(id))) return false;
+      }
 
-  // Only show footer on /home and /film/* routes
+      return true;
+    })
+    .sort((a, b) => {
+      switch (filters.sortBy) {
+        case "latestAdded":
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case "oldest":
+          return a.year - b.year;
+        case "titleAsc":
+          return a.title.localeCompare(b.title);
+        case "titleDesc":
+          return b.title.localeCompare(a.title);
+        case "newest":
+        default:
+          return b.year - a.year;
+      }
+    });
+
   const showFooter =
     location.pathname.startsWith("/home") ||
     location.pathname.startsWith("/film");
@@ -96,7 +105,14 @@ const AppContent: React.FC = () => {
           <Route path="/film/:titleParam" element={<FilmPage />} />
         </Routes>
       </main>
-      {showFooter && <Footer onSearch={setSearchQuery} genres={genres} onApplyFilters={setFilters}/>}
+
+      {showFooter && (
+        <Footer
+          onSearch={setSearchQuery}
+          genres={genres}
+          onApplyFilters={setFilters}
+        />
+      )}
     </div>
   );
 };

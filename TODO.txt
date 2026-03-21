@@ -1,11 +1,10 @@
 1. Authentication & User Flow
 
-    As a user, I can sign up with valid credentials.
-    As a user, I can log in with valid credentials.
-    As a user, I cannot log in with invalid credentials and see an error.
-    As a user, I am redirected to /login if I am not authenticated.
-    As a user, I can view my profile page after logging in.
-    As a user, I can log out and get redirected to the login page.
+    X As a user, I can sign up with valid credentials.
+    X As a user, I can log in with valid credentials.
+    X As a user, I cannot log in with invalid credentials and see an error.
+    X As a user, I can view my profile page after logging in.
+    X As a user, I can log out and get redirected to the login page.
 
 2. Onboarding
 
@@ -15,8 +14,10 @@
 
 3. Home / Film Listing
 
-    As a user, I can see a list of films on the home page.
-    As a user, I can see a “New” badge on films added within the last 7 days.
+    X As a user, I can see a list of films on the home page.
+    X As a user, I can see a “New” badge on films added within the last 7 days.
+    As a user, I can filter by the date films were added to the app
+        as part of this, move sort by options to a config somewhere, reduce repeated code.
     As a user, I can search films using the search bar in the footer.
     As a user, I can filter films by genre and see the filtered results immediately.
     As a user, I can sort films (latest, oldest, title A–Z, title Z–A) and see the updated list instantly.

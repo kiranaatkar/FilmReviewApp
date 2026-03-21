@@ -51,6 +51,7 @@ const FilmCard: React.FC<Props> = ({ film }) => {
           <div><strong>Year:</strong> {film.year}</div>
           <div><strong>ID:</strong> {film.id}</div>
           <div><strong>Runtime:</strong> {film.runtime} min</div>
+          <div><strong>Created At:</strong> {film.createdAt ? new Date(film.createdAt).toLocaleDateString() : "Unknown"}</div>
           {film.genres?.length ? (
             <div>
               <strong>Genres:</strong>{" "}

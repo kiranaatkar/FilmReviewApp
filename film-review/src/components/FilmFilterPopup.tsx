@@ -3,13 +3,18 @@ import "../styles/FilmFilterPopup.css";
 import { Genre } from "../types/FilmTypes";
 import { MultiSelect } from "./MultiSelect";
 import { InlineSelect } from "./InlineSelect";
+import {
+  FILM_SORT_OPTIONS,
+  DEFAULT_FILM_SORT,
+  FilmSortOption,
+} from "../config/FilmFilters";
 
 interface FilmFilterPopupProps {
   onApply: (filters: {
     fromYear?: number;
     toYear?: number;
     selectedGenres: Genre[];
-    sortBy: string;
+    sortBy: FilmSortOption;
   }) => void;
   genres: Genre[];
 }
@@ -21,7 +26,7 @@ const FilmFilterPopup: React.FC<FilmFilterPopupProps> = ({
   const [fromYear, setFromYear] = useState<number | undefined>();
   const [toYear, setToYear] = useState<number | undefined>();
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
-  const [sortBy, setSortBy] = useState<string>("latest");
+  const [sortBy, setSortBy] = useState<FilmSortOption>(DEFAULT_FILM_SORT);
 
   useEffect(() => {
     onApply({ fromYear, toYear, selectedGenres, sortBy });
@@ -31,7 +36,7 @@ const FilmFilterPopup: React.FC<FilmFilterPopupProps> = ({
     setFromYear(undefined);
     setToYear(undefined);
     setSelectedGenres([]);
-    setSortBy("latest");
+    setSortBy(DEFAULT_FILM_SORT);
   };
 
   return (
@@ -71,18 +76,12 @@ const FilmFilterPopup: React.FC<FilmFilterPopupProps> = ({
         />
       </div>
 
-      {/* Sort */}
       <div className="filter-group">
         <label>Sort By</label>
         <InlineSelect
           value={sortBy}
-          onChange={setSortBy}
-          options={[
-            { value: "latest", label: "Latest" },
-            { value: "oldest", label: "Oldest" },
-            { value: "titleAsc", label: "Title (A–Z)" },
-            { value: "titleDesc", label: "Title (Z–A)" },
-          ]}
+          onChange={(value) => setSortBy(value as FilmSortOption)}
+          options={FILM_SORT_OPTIONS}
         />
       </div>
 
