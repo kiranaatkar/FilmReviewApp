@@ -14,7 +14,8 @@ type Props = {
   showFilmPeak: boolean;
   showAudience: boolean;
   showYou: boolean;
-  onUserChange?: (points: Point[]) => void; // emit after drag
+  isEditing?: boolean;
+  onUserChange?: (points: Point[]) => void;
 };
 
 const Graph: React.FC<Props> = ({
@@ -25,6 +26,7 @@ const Graph: React.FC<Props> = ({
   showFilmPeak,
   showAudience,
   showYou,
+  isEditing = false,
   onUserChange,
 }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -35,7 +37,6 @@ const Graph: React.FC<Props> = ({
       .curve(d3.curveMonotoneX)
   );
 
-  // RAF throttling
   const rafId = useRef<number | null>(null);
 
   const scheduleUpdate = (updateFn: () => void) => {
@@ -46,7 +47,6 @@ const Graph: React.FC<Props> = ({
     });
   };
 
-  // --- STATIC LAYERS (runs once)
   useEffect(() => {
     if (!svgRef.current) return;
     const svg = d3.select(svgRef.current);
@@ -74,7 +74,6 @@ const Graph: React.FC<Props> = ({
     gradient.append("stop").attr("offset", "100%").attr("stop-color", "red");
   }, [posterUrl]);
 
-  // --- DYNAMIC LAYERS
   useEffect(() => {
     if (!svgRef.current) return;
     const svg = d3.select(svgRef.current);
@@ -86,7 +85,6 @@ const Graph: React.FC<Props> = ({
 
     const line = lineRef.current;
 
-    // Film Peak Layer
     filmLayer
       .selectAll<SVGPathElement, Point[]>("path")
       .data(showFilmPeak && filmPeakPoints.length ? [filmPeakPoints] : [])
@@ -116,9 +114,6 @@ const Graph: React.FC<Props> = ({
       .attr("cx", d => d.x)
       .attr("cy", d => d.y);
 
-    // ===============================
-    // 👥 Audience Layer (D3 join)
-    // ===============================
     audienceLayer
       .selectAll<SVGPathElement, Point[]>("path")
       .data(showAudience && audienceData.length ? [audienceData] : [])
@@ -148,9 +143,7 @@ const Graph: React.FC<Props> = ({
       .attr("cx", d => d.x)
       .attr("cy", d => d.y);
 
-    // User Layer (Draggable)
     if (showYou && data.length) {
-      // Path join
       userLayer
         .selectAll<SVGPathElement, Point[]>("path")
         .data([data])
@@ -174,7 +167,10 @@ const Graph: React.FC<Props> = ({
           .attr("pointer-events", "none")
           .transition()
           .duration(150)
-          .attr("points", `${peak.x},${peak.y - 25} ${peak.x - 10},${peak.y - 10} ${peak.x + 10},${peak.y - 10}`);
+          .attr(
+            "points",
+            `${peak.x},${peak.y - 25} ${peak.x - 10},${peak.y - 10} ${peak.x + 10},${peak.y - 10}`
+          );
       };
 
       const updateLines = () => {
@@ -182,34 +178,7 @@ const Graph: React.FC<Props> = ({
         updatePeak();
       };
 
-      const dragBehavior = d3.drag<SVGCircleElement, Point>()
-        .on("drag", function (event, draggedPoint) {
-          const idx = data.indexOf(draggedPoint);
-
-          if (idx > 0 && idx < data.length - 1) {
-            draggedPoint.x = Math.max(
-              data[idx - 1].x + config.pointPadding,
-              Math.min(data[idx + 1].x - config.pointPadding, event.x)
-            );
-          }
-
-          draggedPoint.y = Math.max(
-            config.verticalGridPadding,
-            Math.min(config.graphHeight, event.y)
-          );
-
-          d3.select(this)
-            .attr("cx", draggedPoint.x)
-            .attr("cy", draggedPoint.y);
-
-          scheduleUpdate(updateLines);
-        })
-        .on("end", () => {
-          onUserChange?.([...data]); // emit once after drag
-        });
-
-      // Circle join
-      userLayer
+      const circles = userLayer
         .selectAll<SVGCircleElement, Point>("circle")
         .data(data)
         .join("circle")
@@ -217,17 +186,63 @@ const Graph: React.FC<Props> = ({
         .attr("r", 8)
         .attr("fill", "#0D6901")
         .attr("cx", d => d.x)
-        .attr("cy", d => d.y)
-        .each(function () {
-          d3.select(this).call(dragBehavior as any);
-        });
+        .attr("cy", d => d.y);
+
+      if (isEditing) {
+        const dragBehavior = d3.drag<SVGCircleElement, Point>()
+          .on("drag", function (event, draggedPoint) {
+            const idx = data.indexOf(draggedPoint);
+
+            if (idx > 0 && idx < data.length - 1) {
+              draggedPoint.x = Math.max(
+                data[idx - 1].x + config.pointPadding,
+                Math.min(data[idx + 1].x - config.pointPadding, event.x)
+              );
+            }
+
+            draggedPoint.y = Math.max(
+              config.verticalGridPadding,
+              Math.min(config.graphHeight, event.y)
+            );
+
+            d3.select(this)
+              .attr("cx", draggedPoint.x)
+              .attr("cy", draggedPoint.y);
+
+            scheduleUpdate(updateLines);
+          })
+          .on("end", () => {
+            onUserChange?.([...data]);
+          });
+
+        circles
+          .style("pointer-events", "all")
+          .style("cursor", "grab")
+          .each(function () {
+            d3.select(this).call(dragBehavior as any);
+          });
+      } else {
+        circles
+          .style("pointer-events", "none")
+          .style("cursor", "default")
+          .on(".drag", null);
+      }
 
       updatePeak();
     } else {
       userLayer.selectAll("*").remove();
       peakLayer.selectAll("*").remove();
     }
-  }, [filmPeakPoints, audienceData, data, showFilmPeak, showAudience, showYou, onUserChange]);
+  }, [
+    filmPeakPoints,
+    audienceData,
+    data,
+    showFilmPeak,
+    showAudience,
+    showYou,
+    isEditing,
+    onUserChange,
+  ]);
 
   return (
     <div className="graph-wrapper">

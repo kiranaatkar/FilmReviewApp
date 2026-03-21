@@ -16,24 +16,23 @@
 
     X As a user, I can see a list of films on the home page.
     X As a user, I can see a “New” badge on films added within the last 7 days.
-    As a user, I can filter by the date films were added to the app
-        as part of this, move sort by options to a config somewhere, reduce repeated code.
-    As a user, I can search films using the search bar in the footer.
-    As a user, I can filter films by genre and see the filtered results immediately.
-    As a user, I can sort films (latest, oldest, title A–Z, title Z–A) and see the updated list instantly.
-    As a user, I see a message if no films are found.
+    X As a user, I can filter by the date films were added to the app
+    X As a user, I can search films using the search bar in the footer.
+    X As a user, I can filter films by genre and see the filtered results immediately.
+    X As a user, I can sort films (latest, oldest, title A–Z, title Z–A) and see the updated list instantly.
+    X As a user, I see a message if no films are found.
 
 4. Film Page
 
-    As a user, I can click on a film and go to its detail page.
-    As a user, I can see film details: title, year, runtime, genres, directors, actors.
-    As a user, I can drag points on my graph to submit ratings.
-    As a user, I see average ratings update optimistically as I adjust my points.
-    As a user, I can submit my review and see a “saved” toast.
-    As a user, the submit button is disabled while saving.
-    As a user, I can toggle layers (Film Peak, Audience, You) in the graph.
-    As a user, peak triangles and lines update smoothly with transitions.
-    As a user, I can edit my review (if you have this feature).
+    X As a user, I can click on a film and go to its detail page.
+    X As a user, I can see film details: title, year, runtime, genres, directors, actors.
+    X As a user, I can drag points on my graph to submit ratings.
+    X As a user, I see average ratings update optimistically as I adjust my points.
+    X As a user, I can submit my review and see a “saved” toast.
+    X As a user, the submit button is disabled while saving.
+    X As a user, I can toggle layers (Film Peak, Audience, You) in the graph.
+    X As a user, peak triangles and lines update smoothly with transitions.
+    X As a user, I can edit my review (if you have this feature).
 
 5. Performance / UX
 

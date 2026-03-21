@@ -2,7 +2,6 @@ import client from "./client";
 import { Film } from "../types/FilmTypes";
 import { Point, Rating } from "../types/GraphTypes";
 import { StatusCodes } from "http-status-codes";
-import { DEFAULT_POINTS } from "../config/GraphConfig";
 import { TokenResponse } from "../types/AuthTypes";
 
 class FilmService {
@@ -105,15 +104,14 @@ class FilmService {
     }
   }
 
-  static async getUserRating(filmId: number, userId: number): Promise<Rating> {
+  static async getUserRating(filmId: number, userId: number): Promise<Rating | null> {
     try {
       const response = await client.get(`/films/${filmId}/rating/${userId}`);
       return response.data;
     } catch (error: any) {
       switch (error.response.status) {
         case StatusCodes.NOT_FOUND:
-          // return default rating
-          return { userId, filmId, points: DEFAULT_POINTS };
+          return null;
         case StatusCodes.INTERNAL_SERVER_ERROR:
           console.error(
             `Error fetching user rating for film ${filmId}:`,
