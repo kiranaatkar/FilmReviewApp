@@ -1,65 +1,37 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
-import "../styles/FilmCard.css";
-import { Film } from "../types/FilmTypes";
+import { Film, FilmPreview } from "../types/FilmTypes";
 import StaticGraph from "./StaticGraph";
-import { Point } from "../types/GraphTypes";
-import FilmService from "../services/FilmService";
+import "../styles/FilmCard.css";
 
 type Props = {
   film: Film;
+  preview?: FilmPreview;
+  showAudience: boolean;
+  showYou: boolean;
+  showFilmPeak: boolean;
 };
 
-const DEBUG = false;
-
-const FilmCard: React.FC<Props> = ({ film }) => {
-  const [average, setAverage] = useState<Point[]>([]);
-
+const FilmCard: React.FC<Props> = ({ film, preview, showAudience, showYou, showFilmPeak }) => {
   const isNew = useMemo(() => {
     if (!film.createdAt) return false;
     const created = new Date(film.createdAt).getTime();
-    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-    return created >= sevenDaysAgo;
+    return created >= Date.now() - 7 * 24 * 60 * 60 * 1000;
   }, [film.createdAt]);
-
-  useEffect(() => {
-    let mounted = true;
-
-    FilmService.getAverageRating(film.id)
-      .then((avg) => {
-        if (mounted) setAverage(avg);
-      })
-      .catch(() => {});
-
-    return () => {
-      mounted = false;
-    };
-  }, [film.id]);
-
-  // stable graph data reference
-  const memoData = useMemo(() => average, [average]);
 
   return (
     <Link className="film-card" to={`/film/${encodeURIComponent(film.title)}`}>
-      <StaticGraph posterUrl={film.posterUrl} data={memoData} />
+      <StaticGraph
+        posterUrl={film.posterUrl}
+        averageData={preview?.average ?? []}
+        userData={preview?.userRating ?? []}
+        filmPeakData={preview?.filmPeak ?? []}
+        showAudience={showAudience}
+        showYou={showYou}
+        showFilmPeak={showFilmPeak}
+      />
 
       {isNew && <div className="new-badge">New</div>}
-
-      {DEBUG && (
-        <div className="debug-overlay">
-          <div><strong>Title:</strong> {film.title}</div>
-          <div><strong>Year:</strong> {film.year}</div>
-          <div><strong>ID:</strong> {film.id}</div>
-          <div><strong>Runtime:</strong> {film.runtime} min</div>
-          <div><strong>Created At:</strong> {film.createdAt ? new Date(film.createdAt).toLocaleDateString() : "Unknown"}</div>
-          {film.genres?.length ? (
-            <div>
-              <strong>Genres:</strong>{" "}
-              {film.genres.map(g => g.name).join(", ")}
-            </div>
-          ) : null}
-        </div>
-      )}
     </Link>
   );
 };

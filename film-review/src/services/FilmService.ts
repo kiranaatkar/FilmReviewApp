@@ -1,5 +1,5 @@
 import client from "./client";
-import { Film } from "../types/FilmTypes";
+import { Film, FilmPreview } from "../types/FilmTypes";
 import { Point, Rating } from "../types/GraphTypes";
 import { StatusCodes } from "http-status-codes";
 import { TokenResponse } from "../types/AuthTypes";
@@ -104,6 +104,20 @@ class FilmService {
     }
   }
 
+  static async getFilmPreviews(userId: number, filmIds: number[]): Promise<FilmPreview[]> {
+    try {
+      const response = await client.post("/films/previews", { userId, filmIds });
+      return response.data;
+    } catch (error: any) {
+      console.error(`Error fetching film previews for user ${userId}:`, error);
+      switch (error.response.status) {
+        case StatusCodes.INTERNAL_SERVER_ERROR:
+          throw new Error("Failed to fetch film previews. Please try again.");
+        default:
+          throw new Error("An unexpected error occurred.");
+      }
+    }
+  }
   static async getUserRating(filmId: number, userId: number): Promise<Rating | null> {
     try {
       const response = await client.get(`/films/${filmId}/rating/${userId}`);

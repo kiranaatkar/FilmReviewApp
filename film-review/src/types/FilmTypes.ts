@@ -1,3 +1,5 @@
+import { Point } from "./GraphTypes";
+
 export type Genre = {
   id: number;
   name: string;
@@ -24,3 +26,10 @@ export type Film = {
   actors: Actor[];
   createdAt: string;
 }
+
+export type FilmPreview = {
+  filmId: number;
+  average: Point[];
+  userRating: Point[];
+  filmPeak: Point[];
+};

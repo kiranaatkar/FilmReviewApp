@@ -1,50 +1,246 @@
-1. Authentication & User Flow
 
-    X As a user, I can sign up with valid credentials.
-    X As a user, I can log in with valid credentials.
-    X As a user, I cannot log in with invalid credentials and see an error.
-    X As a user, I can view my profile page after logging in.
-    X As a user, I can log out and get redirected to the login page.
 
-2. Onboarding
+If you want, I can also write the optimized SQL query for peaks and averages that avoids using user_id = 1 as a placeholder, so you can store a “global peak” in one table — that gives a further performance win.
 
-    As a new user, I can complete onboarding after sign-up.
-    As a user, I cannot skip required onboarding steps (if you enforce them).
-    As a returning user, I am not shown onboarding again.
 
-3. Home / Film Listing
+## 2) Only render what’s on screen
 
-    X As a user, I can see a list of films on the home page.
-    X As a user, I can see a “New” badge on films added within the last 7 days.
-    X As a user, I can filter by the date films were added to the app
-    X As a user, I can search films using the search bar in the footer.
-    X As a user, I can filter films by genre and see the filtered results immediately.
-    X As a user, I can sort films (latest, oldest, title A–Z, title Z–A) and see the updated list instantly.
-    X As a user, I see a message if no films are found.
+If you’ve got lots of cards, use virtualization.
 
-4. Film Page
+Libraries like:
 
-    X As a user, I can click on a film and go to its detail page.
-    X As a user, I can see film details: title, year, runtime, genres, directors, actors.
-    X As a user, I can drag points on my graph to submit ratings.
-    X As a user, I see average ratings update optimistically as I adjust my points.
-    X As a user, I can submit my review and see a “saved” toast.
-    X As a user, the submit button is disabled while saving.
-    X As a user, I can toggle layers (Film Peak, Audience, You) in the graph.
-    X As a user, peak triangles and lines update smoothly with transitions.
-    X As a user, I can edit my review (if you have this feature).
+* `react-window`
+* `react-virtualized`
 
-5. Performance / UX
+That way, if there are 100 films, you only render maybe 10–20 visible cards at once.
 
-    As a user, I can scroll the home page smoothly even with many films.
-    As a user, the graphs render quickly and are responsive.
-    X As a user, filters update immediately without needing an Apply button.
-    X As a user, the sort and genre dropdowns expand correctly and push content down.
-    As a user, loading skeletons appear while data is fetching (if implemented).
+This matters a lot because each card has:
 
-6. Edge Cases
+* an SVG
+* D3 work
+* image background
+* line drawing
 
-    As a user, I see graceful error messages if a fetch fails.
-    As a user, the app handles empty film lists or missing data.
-    As a user, the app handles network slowdowns gracefully.
-    As a user, invalid input (like negative years in filters) does not crash the app.
+Without virtualization, the page can get chunky fast.
+
+---
+
+## 3) Don’t redraw the whole SVG unless you need to
+
+You’re already partly doing this, which is good.
+
+Keep this rule:
+
+* background/grid created once
+* only data layers update later
+
+That is much cheaper than `svg.selectAll("*").remove()` every time data or filters change.
+
+For example in both graph components, only do the full teardown when the poster changes or component mounts. For filter toggles, just update the relevant layers.
+
+---
+
+## 4) Avoid unnecessary transitions on small card graphs
+
+Transitions are nice, but on a page full of cards they add up.
+
+For home-page static cards:
+
+* no transition, or very short transition
+* no circles unless needed
+* no peak marker polygon unless it adds real value
+
+Save the richer graph behavior for the film detail page.
+
+Cards should be “cheap previews.”
+
+---
+
+## 5) Memoize data shaping, not just components
+
+`React.memo` helps only if props are stable.
+
+Useful patterns:
+
+* `useMemo` for derived arrays/objects
+* avoid recreating arrays every render unless values changed
+* clone points only when needed
+
+For example, if you pass a fresh `[]` or newly mapped array every render, memoization loses a lot of its value.
+
+---
+
+## 6) Cache API responses
+
+For this kind of app, caching is your friend.
+
+Frontend:
+
+* use React Query / TanStack Query
+
+That gives you:
+
+* request deduping
+* caching
+* stale-while-revalidate
+* less manual `loading/error/useEffect` code
+
+Example wins:
+
+* navigating back to home doesn’t refetch everything immediately
+* opening a film page after seeing its card can reuse some cached data
+
+Backend:
+
+* cache metadata fetches from external movie APIs
+* store fetched film metadata in your DB once, then serve from DB after that
+
+That’s especially important if your “create film” endpoint pulls from OMDb/TMDB/etc.
+
+---
+
+## 7) Precompute or store aggregate graph data
+
+`getAverageRating(filmId)` is okay now, but as ratings grow, recalculating averages every time can get expensive.
+
+You have a few options:
+
+* keep it as-is for now if scale is small
+* later create a summary table like `film_rating_summary`
+* or recompute average when a rating is created/updated
+
+That way home-page graph previews don’t need to aggregate raw `rating_point` rows every single time.
+
+---
+
+## 8) Add the right DB indexes
+
+This one is low effort, high reward.
+
+You should definitely index the columns you query often.
+
+At minimum:
+
+```sql
+CREATE INDEX idx_rating_user_film ON rating(user_id, film_id);
+CREATE INDEX idx_rating_film ON rating(film_id);
+CREATE INDEX idx_rating_point_rating_id ON rating_point(rating_id);
+CREATE INDEX idx_film_title ON film(title);
+```
+
+Since you said to update create statements rather than alter, these can be added into the setup script after table creation.
+
+These will help:
+
+* `getFilm(title)`
+* `getUserRating(userId, filmId)`
+* `getAverageRating(filmId)`
+* joining `rating_point` to `rating`
+
+---
+
+## 9) Batch backend queries for home-page previews
+
+If you build a preview endpoint, don’t loop in Node and do per-film queries.
+
+Bad:
+
+* for each film → query average
+* for each film → query user rating
+* for each film → query peak
+
+Better:
+
+* one query for all relevant film averages
+* one query for all current-user ratings across visible films
+* one query for film-peak ratings across visible films
+
+Then group them in JS.
+
+That keeps the backend from doing N+1 query chaos.
+
+---
+
+## 10) Keep card graphs visually simpler than detail graphs
+
+Your full `Graph` component has:
+
+* drag logic
+* transitions
+* circles
+* peak marker
+* multiple layers
+
+That’s fine on one page.
+
+But `StaticGraph` should be trimmed down:
+
+* just paths
+* no drag
+* minimal transitions
+* fewer DOM nodes
+
+That keeps the home page light.
+
+---
+
+## 11) Be careful with poster images
+
+A bunch of full poster images inside SVGs can get heavy.
+
+Good moves:
+
+* use smaller poster image URLs for cards if available
+* lazy load cards/images when possible
+* crop once in the render logic, not with extra expensive work elsewhere
+
+If your movie API gives multiple image sizes, use smaller ones on the home page and larger ones on the film page.
+
+---
+
+## 12) Measure, don’t guess
+
+This saves a lot of time.
+
+Use:
+
+* React DevTools Profiler
+* browser Network tab
+* browser Performance tab
+
+Check:
+
+* how many requests fire on home page load
+* which components rerender when a filter changes
+* whether toggling filters redraws every card expensively
+* whether image loading is the bottleneck instead of D3
+
+A lot of “graph slowness” is actually “too many requests” or “too many images.”
+
+---
+
+# Practical priority order
+
+If I were cleaning this up, I’d do it in this order:
+
+1. **Remove per-card fetching**
+2. **Create one preview endpoint**
+3. **Add DB indexes**
+4. **Keep `StaticGraph` minimal**
+5. **Use React Query for caching**
+6. **Add virtualization if film count is large**
+
+That gets you most of the benefit without overengineering.
+
+## Best architecture for your app
+
+For your setup, I’d aim for this split:
+
+* **Home page:** one request for films + preview graph data
+* **Film page:** one request for full film details + one for user-specific editable rating data if needed
+* **Card graph:** lightweight, static, no fancy effects
+* **Detail graph:** rich, interactive, editable
+
+That keeps the flashy stuff where it matters and the list page fast.
+
+If you want, I can sketch the `GET /api/films/previews` endpoint and show the SQL/service/controller shape for it.
