@@ -5,15 +5,58 @@ import { Point } from "../types/GraphTypes";
 type SVG = d3.Selection<SVGSVGElement, unknown, null, undefined>;
 
 export const addBackground = (svg: SVG, posterUrl: string, config: GraphConfig) => {
+  const squareSize = Math.min(config.graphWidth, config.graphHeight);
+  const x = config.graphPadding + (config.graphWidth - squareSize) / 2;
+  const y = (config.graphHeight - squareSize) / 2;
+
+  const svgNode = svg.node();
+  if (!svgNode) return;
+
+  const uniqueId = `poster-${Math.random().toString(36).slice(2, 11)}`;
+  const clipId = `${uniqueId}-clip`;
+  const filterId = `${uniqueId}-mono`;
+
+  const defs = svg.select("defs").empty()
+    ? svg.append("defs")
+    : svg.select("defs");
+
+  defs
+    .append("clipPath")
+    .attr("id", clipId)
+    .append("rect")
+    .attr("x", x)
+    .attr("y", y)
+    .attr("width", squareSize)
+    .attr("height", squareSize);
+
+  defs
+    .append("filter")
+    .attr("id", filterId)
+    .append("feColorMatrix")
+    .attr("type", "matrix")
+    .attr(
+      "values",
+      `
+      0.299 0.587 0.114 0 0
+      0.299 0.587 0.114 0 0
+      0.299 0.587 0.114 0 0
+      0     0     0     1 0
+      `
+    );
+
   svg
     .selectAll("image")
     .data([null])
     .join("image")
     .attr("href", posterUrl)
-    .attr("width", config.graphWidth)
-    .attr("height", config.graphHeight)
-    .attr("x", config.graphPadding)
-    .attr("y", 0);
+    .attr("x", x)
+    .attr("y", y)
+    .attr("width", squareSize)
+    .attr("height", squareSize)
+    .attr("preserveAspectRatio", "xMidYMid slice")
+    .attr("clip-path", `url(#${clipId})`)
+    .attr("filter", `url(#${filterId})`)
+    .attr("opacity", 0.9);
 };
 
 export const addGridLinesAndLabels = (svg: SVG, config: GraphConfig) => {
@@ -89,5 +132,5 @@ export const createLineGenerator = () => {
     .line<Point>()
     .x((d) => d.x)
     .y((d) => d.y)
-    .curve(d3.curveMonotoneX); // smooth curve
+    .curve(d3.curveMonotoneX);
 };

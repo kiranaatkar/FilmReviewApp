@@ -38,8 +38,8 @@
 
     As a user, I can scroll the home page smoothly even with many films.
     As a user, the graphs render quickly and are responsive.
-    As a user, filters update immediately without needing an Apply button.
-    As a user, the sort and genre dropdowns expand correctly and push content down.
+    X As a user, filters update immediately without needing an Apply button.
+    X As a user, the sort and genre dropdowns expand correctly and push content down.
     As a user, loading skeletons appear while data is fetching (if implemented).
 
 6. Edge Cases

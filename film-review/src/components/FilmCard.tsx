@@ -10,7 +10,7 @@ type Props = {
   film: Film;
 };
 
-const DEBUG = true;
+const DEBUG = false;
 
 const FilmCard: React.FC<Props> = ({ film }) => {
   const [average, setAverage] = useState<Point[]>([]);
